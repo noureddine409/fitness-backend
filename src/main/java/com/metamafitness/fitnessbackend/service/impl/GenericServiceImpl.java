@@ -55,6 +55,8 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     @Override
     public T save(T entity) throws ElementAlreadyExistException {
         final Long id = entity.getId();
+        if (id == null)
+            return genericRepository.save(entity);
         final Optional<T> entityExist = genericRepository.findById(id);
         if (!entityExist.isPresent()) {
             return genericRepository.save(entity);

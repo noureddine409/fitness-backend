@@ -7,4 +7,10 @@ public class GenericEnum {
         FEMALE
     }
 
+    public enum RoleName {
+        ADMIN,
+        USER,
+        TRAINER
+    }
+
 }
