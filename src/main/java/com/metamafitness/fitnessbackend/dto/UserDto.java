@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class UserDto extends GenericDto{
+public class UserDto extends AppUserDto{
     private String firstName;
     private String lastName;
     private String email;
