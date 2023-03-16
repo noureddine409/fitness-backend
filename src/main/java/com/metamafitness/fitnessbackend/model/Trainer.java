@@ -1,7 +1,9 @@
 package com.metamafitness.fitnessbackend.model;
 
-import jakarta.persistence.Entity;
+
 import lombok.*;
+
+import javax.persistence.Entity;
 
 @Entity
 @Getter @Setter
