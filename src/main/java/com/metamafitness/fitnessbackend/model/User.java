@@ -1,27 +1,34 @@
 package com.metamafitness.fitnessbackend.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "users")
-public class User extends GenericEntity {
+public class User extends GenericEntity implements UserDetails {
     private String firstName;
     private String lastName;
     @Column(name = "email", nullable = false, length = 200)
     private String email;
     private String password;
+
+    private String verificationCode;
+
+    private boolean enabled;
+
+    private String RefreshTokenId;
     @Enumerated(EnumType.STRING)
     private GenericEnum.Gender gender;
 
@@ -37,5 +44,39 @@ public class User extends GenericEntity {
             roles = new HashSet<>();
         }
         roles.add(role);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (Objects.isNull(this.roles) || this.roles.isEmpty())
+            return Collections.emptyList();
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 }

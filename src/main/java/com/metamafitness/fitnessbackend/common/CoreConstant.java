@@ -13,6 +13,14 @@ public class CoreConstant {
         public static final String ALREADY_EXISTS = "message.exception.already.exists.element";
         public static final String DELETE_ELEMENT = "message.exception.delete.element";
         public static final String FIND_ELEMENTS = "message.exception.find.elements";
+
+        public static final String USER_ROLE_ALREADY_CREATED = "message.exception.info.UserRoleCreated";
+
+        public static final String ADMIN_ROLE_ALREADY_CREATED = "message.exception.info.AdminRoleCreated";
+
+        public static final String TRAINER_ROLE_ALREADY_CREATED = "message.exception.info.TrainerRoleCreated"  ;
+
+        public static final String ADMIN_ACCOUT_ALREADY_CREATED = "message.exception.info.AdminAccountCreated";
         public static final String FILE_UNAUTHORIZED_FORMAT = "message.exception.unauthorized-format";
         public static final String UNAUTHORIZIED_FILE_NUMBER = "message.exception.file-number";
         public static final String AUTHENTICATION_BAD_CREDENTIALS = "message.exception.authentication.bad.credentials";
@@ -62,6 +70,15 @@ public class CoreConstant {
         public static final float LOCATION_LONGITUDE_MAX = 90.0f;
         public static final float LOCATION_LATITUDE_MIN = -180.0f;
         public static final float LOCATION_LATITUDE_MAX = 180.0f;
+    }
+
+    public static class Success {
+        public static final String USER_ROLE_CREATED_SUCCESSFULLY = "message.success.info.UserRoleCreated";
+
+        public static final String ADMIN_ACCOUNT_CREATED_SUCCESSFULLY = "message.success.info.AdminAccountCreated";
+        public static final String ADMIN_ROLE_CREATED_SUCCESSFULLY = "message.success.info.AdminRoleCreated";
+
+        public static final String TRAINER_ROLE_CREATED_SUCCESSFULLY = "message.success.info.TrainerRoleCreated";
     }
 
 }

@@ -10,7 +10,15 @@ public class GenericEnum {
     public enum RoleName {
         ADMIN,
         USER,
-        TRAINER
+        TRAINER,
+
+        DEV
+    }
+
+
+    public enum JwtTokenType {
+        ACCESS,
+        REFRESH
     }
 
 }
