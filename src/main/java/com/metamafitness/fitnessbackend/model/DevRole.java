@@ -1,6 +1,5 @@
 package com.metamafitness.fitnessbackend.model;
 
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,11 +7,12 @@ import lombok.Setter;
 import javax.persistence.Entity;
 
 @Entity
+@Getter
+@Setter
 @Builder
-@Getter @Setter
-public class UserRole extends AppUserRole {
+public class DevRole extends AppUserRole {
 
-    public UserRole() {
-        setName(GenericEnum.RoleName.USER);
+    public DevRole() {
+        setName(GenericEnum.RoleName.DEV);
     }
 }

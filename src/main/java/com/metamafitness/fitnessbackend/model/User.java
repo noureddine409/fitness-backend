@@ -1,16 +1,82 @@
 package com.metamafitness.fitnessbackend.model;
 
-import jakarta.persistence.Entity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
-@Builder
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+
+@Getter @Setter
 @NoArgsConstructor
-public class User extends AppUser{
+@AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "users")
+public class User extends GenericEntity implements UserDetails {
+    private String firstName;
+    private String lastName;
+    @Column(name = "email", nullable = false, length = 200)
+    private String email;
+    private String password;
 
+    private String verificationCode;
+
+    private boolean enabled;
+
+    private String RefreshTokenId;
+    @Enumerated(EnumType.STRING)
+    private GenericEnum.Gender gender;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<AppUserRole> roles;
+
+    public void addRole(AppUserRole role) {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        roles.add(role);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (Objects.isNull(this.roles) || this.roles.isEmpty())
+            return Collections.emptyList();
+        return this.roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 }
