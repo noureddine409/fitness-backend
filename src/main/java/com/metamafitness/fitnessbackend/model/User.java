@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,25 @@ public class User extends GenericEntity implements UserDetails {
     @Column(name = "email", nullable = false, length = 200)
     private String email;
     private String password;
+    private LocalDate birthDay;
+
+    private String profilePicture;
 
     private String verificationCode;
+
+    private String bio;
 
     private boolean enabled;
 
     private String RefreshTokenId;
     @Enumerated(EnumType.STRING)
     private GenericEnum.Gender gender;
+
+    @Embedded
+    private Address address;
+
+    @Embedded
+    private PhoneNumber phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinTable(
