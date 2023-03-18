@@ -1,11 +1,13 @@
 package com.metamafitness.fitnessbackend.service.impl;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
+import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.*;
 import com.metamafitness.fitnessbackend.repository.UserRepository;
 import com.metamafitness.fitnessbackend.service.*;
+import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -60,8 +63,10 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     private final DevRoleService devRoleService;
 
+    private final JwtProvider jwtProvider;
+
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, MailSenderService mailSenderService,
-                           UserRoleService userRoleService, AdminRoleService adminRoleService, TrainerRoleService trainerRoleService, DevRoleService devRoleService) {
+                           UserRoleService userRoleService, AdminRoleService adminRoleService, TrainerRoleService trainerRoleService, DevRoleService devRoleService, JwtProvider jwtProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSenderService = mailSenderService;
@@ -69,6 +74,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         this.adminRoleService = adminRoleService;
         this.trainerRoleService = trainerRoleService;
         this.devRoleService = devRoleService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -128,7 +134,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public User saveAdmin() {
+    public void saveAdmin() {
         User admin = User.
                 builder().
                 email(adminUsername).
@@ -136,7 +142,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 firstName(adminName).
                 build();
         if (userRepository.findByEmail(admin.getEmail()).isPresent())
-            return null;
+            return ;
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         final AdminRole adminRole = adminRoleService.findByName(GenericEnum.RoleName.ADMIN);
         final TrainerRole trainerRole = trainerRoleService.findByName(GenericEnum.RoleName.TRAINER);
@@ -146,12 +152,10 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         admin.addRole(trainerRole);
         admin.setEnabled(Boolean.TRUE);
 
-        return userRepository.save(admin);
-
     }
 
     @Override
-    public User saveTrainer() {
+    public void saveTrainer() {
         User trainer = User.
                 builder().
                 email(trainerUsername).
@@ -159,7 +163,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 firstName(trainerName).
                 build();
         if (userRepository.findByEmail(trainer.getEmail()).isPresent())
-            return null;
+            return ;
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         final TrainerRole trainerRole = trainerRoleService.findByName(GenericEnum.RoleName.TRAINER);
         trainer.setPassword(passwordEncoder.encode(trainer.getPassword()));
@@ -167,11 +171,10 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         trainer.addRole(trainerRole);
         trainer.setEnabled(Boolean.TRUE);
 
-        return userRepository.save(trainer);
     }
 
     @Override
-    public User saveDev() {
+    public void saveDev() {
         User dev = User.
                 builder().
                 email(devUsername).
@@ -180,12 +183,28 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 build();
         if (userRepository.findByEmail(dev.getEmail()).isPresent())
             if (userRepository.findByEmail(dev.getEmail()).isPresent())
-                return null;
+                return ;
         final DevRole devRole = devRoleService.findByName(GenericEnum.RoleName.DEV);
         dev.setPassword(passwordEncoder.encode(dev.getPassword()));
         dev.addRole(devRole);
         dev.setEnabled(Boolean.TRUE);
 
-        return userRepository.save(dev);
+
+    }
+
+    @Override
+    public JwtToken generateResetPasswordToken(User user) {
+        final String tokenId = UUID.randomUUID().toString();
+        final JwtToken resetToken = jwtProvider.generateToken(user, GenericEnum.JwtTokenType.RESET, tokenId);
+        user.setResetId(tokenId);
+        userRepository.save(user);
+        return resetToken;
+    }
+
+    @Override
+    public void resetPassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetId(null);
+        userRepository.save(user);
     }
 }

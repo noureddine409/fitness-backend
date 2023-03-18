@@ -1,16 +1,12 @@
 package com.metamafitness.fitnessbackend.utils;
 
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
@@ -22,12 +18,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 @Component
 public class JwtProvider {
 
@@ -40,6 +38,12 @@ public class JwtProvider {
     @Value("${jwt.refresh-token.secret}")
     private String refreshTokenSecret;
 
+    @Value("${jwt.reset-token.secret}")
+    private String resetTokenSecret;
+
+    @Value("${jwt.reset-token.expiration-in-mins}")
+    private int resetTokenExpirationInMins;
+
     @Value("${jwt.refresh-token.expiration-in-weeks}")
     private int refreshTokenExpirationInWeeks;
 
@@ -47,16 +51,34 @@ public class JwtProvider {
     private String tokenIssuer;
 
     public JwtToken generateToken(User user, GenericEnum.JwtTokenType tokenType) throws BusinessException {
-        String secret;
+
         Instant creationDate = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
-        Instant expiryDate;
-        String token;
+
 
         JWTCreator.Builder builder = JWT.create()
                 .withJWTId(UUID.randomUUID().toString())
                 .withSubject(user.getId().toString())
                 .withIssuedAt(creationDate);
 
+        return checkTokenType(user, tokenType, creationDate, builder);
+    }
+
+    public JwtToken generateToken(User user, GenericEnum.JwtTokenType tokenType, String tokenId) throws BusinessException {
+        Instant creationDate = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant();
+
+
+        JWTCreator.Builder builder = JWT.create()
+                .withJWTId(tokenId)
+                .withSubject(user.getId().toString())
+                .withIssuedAt(creationDate);
+
+        return checkTokenType(user, tokenType, creationDate, builder);
+    }
+
+    private JwtToken checkTokenType(User user, GenericEnum.JwtTokenType tokenType, Instant creationDate, JWTCreator.Builder builder) {
+        String secret;
+        Instant expiryDate;
+        String token;
         try {
             switch(tokenType) {
                 case ACCESS -> {
@@ -79,6 +101,15 @@ public class JwtProvider {
 
                     builder
                             .withExpiresAt(expiryDate);
+                }
+                case RESET -> {
+                    secret = resetTokenSecret;
+                    expiryDate = LocalDateTime.now().plusMinutes(resetTokenExpirationInMins)
+                            .atZone(ZoneId.systemDefault()).toInstant();
+
+                    builder
+                            .withExpiresAt(expiryDate);
+
                 }
                 default -> throw new BusinessException("Invalid token type", new BusinessException(), null, null);
             }

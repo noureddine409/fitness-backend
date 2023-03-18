@@ -18,7 +18,8 @@ public class GenericEnum {
 
     public enum JwtTokenType {
         ACCESS,
-        REFRESH
+        REFRESH,
+        RESET
     }
 
     public enum Region {
