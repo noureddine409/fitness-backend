@@ -6,7 +6,7 @@ import com.metamafitness.fitnessbackend.model.UserRole;
 public interface UserRoleService extends GenericService<UserRole> {
 
 
-    public UserRole findByName(GenericEnum.RoleName roleName) ;
+    UserRole findByName(GenericEnum.RoleName roleName) ;
 
 
 }
