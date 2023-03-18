@@ -2,16 +2,14 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.metamafitness.fitnessbackend.common.CoreConstant;
-import com.metamafitness.fitnessbackend.dto.JwtToken;
-import com.metamafitness.fitnessbackend.dto.JwtTokenResponseDto;
-import com.metamafitness.fitnessbackend.dto.UserDto;
-import com.metamafitness.fitnessbackend.dto.UserLoginDto;
+import com.metamafitness.fitnessbackend.dto.*;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.User;
+import com.metamafitness.fitnessbackend.service.MailSenderService;
 import com.metamafitness.fitnessbackend.service.UserService;
 import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +21,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,12 +35,16 @@ public class AuthController extends GenericController<User, UserDto> {
     private final
     JwtProvider jwtProvider;
 
+    private final MailSenderService mailSenderService;
 
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtProvider jwtProvider) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtProvider jwtProvider,
+                          MailSenderService mailSenderService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
+
+        this.mailSenderService = mailSenderService;
     }
 
 
@@ -55,26 +56,26 @@ public class AuthController extends GenericController<User, UserDto> {
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, HttpServletRequest request)
-            throws ElementAlreadyExistException, UnsupportedEncodingException, MessagingException {
+            throws ElementAlreadyExistException {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
         User savedUser = userService.save(convertedUser);
 
         userService.sendVerificationEmail(savedUser, getSiteURL(request));
 
-        return ResponseEntity.ok().body(convertToDto(savedUser));
+        return new ResponseEntity<>(convertToDto(savedUser), HttpStatus.CREATED);
     }
 
     @GetMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestParam("code") String code) {
-        if( userService.verify(code)) {
-            return new ResponseEntity<String>("verify_success", HttpStatus.OK);
+        if (userService.verify(code)) {
+            return new ResponseEntity<>("verify_success", HttpStatus.OK);
         }
-        return new ResponseEntity<String>("verify_fail", HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("verify_fail", HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenResponseDto> login( @RequestBody UserLoginDto userLoginDto)
+    public ResponseEntity<JwtTokenResponseDto> login(@RequestBody UserLoginDto userLoginDto)
             throws UnauthorizedException, ElementNotFoundException {
 
         Authentication authToken =
@@ -107,9 +108,45 @@ public class AuthController extends GenericController<User, UserDto> {
                 );
     }
 
+    @PostMapping("/forget-password")
+    public ResponseEntity<ForgetPasswordResponse> sendForgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest, HttpServletRequest request) {
+        User user = userService.findByEmail(forgetPasswordRequest.getEmail());
+        JwtToken resetToken = userService.generateResetPasswordToken(user);
+        Map<String, Object> mailModel = new HashMap<>();
+        mailModel.put("token", resetToken.getToken());
+        mailModel.put("user", user);
+        mailModel.put("signature", "https://fitness-app.com");
+        mailModel.put("resetUrl", getSiteURL(request) + "api/auth/resetPassword?code=" + resetToken.getToken());
+        mailSenderService.sendEmail(user.getEmail(), "reset password", mailModel, "reset-password.html");
+
+        return ResponseEntity.ok().body(ForgetPasswordResponse.builder().message("email send successfully").build());
+
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
+                                           HttpServletRequest request){
+        String jwtResetToken = jwtProvider.extractTokenFromRequest(request);
+        DecodedJWT decodedResetToken = jwtProvider.getDecodedJWT(jwtResetToken, GenericEnum.JwtTokenType.RESET);
+        Long userId = Long.valueOf(decodedResetToken.getSubject());
+        String resetTokenId = decodedResetToken .getId();
+
+        User user = userService.findById(userId);
+
+        try {
+            if (!resetTokenId.equals(user.getResetId()))
+                throw new UnauthorizedException(null, new UnauthorizedException(), CoreConstant.Exception.AUTHORIZATION_INVALID_TOKEN, null);
+        } catch (NullPointerException e) {
+            throw new BusinessException(e.getMessage(), e.getCause(), null, null);
+        }
+        userService.resetPassword(user, resetPasswordRequest.getNewPassword());
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/token")
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    public ResponseEntity<JwtTokenResponseDto> refreshToken(HttpServletRequest request, HttpServletResponse response) throws BusinessException {
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")})
+    public ResponseEntity<JwtTokenResponseDto> refreshToken(HttpServletRequest request) throws BusinessException {
 
         String refreshToken = jwtProvider.extractTokenFromRequest(request);
 

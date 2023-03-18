@@ -1,22 +1,26 @@
 package com.metamafitness.fitnessbackend.service;
 
+import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.User;
 
 public interface UserService extends GenericService<User>{
 
-    public User findByEmail(String email) throws ElementNotFoundException;
+    User findByEmail(String email) throws ElementNotFoundException;
 
-    public void sendVerificationEmail(User user, String siteURL);
+    void sendVerificationEmail(User user, String siteURL);
 
-    public void generateVerificationCode(User user);
+    void generateVerificationCode(User user);
 
-    public boolean verify(String code);
+    boolean verify(String verificationCode);
 
-    public User saveAdmin();
+    void saveAdmin();
 
-    public User saveTrainer();
+    void saveTrainer();
 
-    public User saveDev();
+    void saveDev();
 
+    JwtToken generateResetPasswordToken(User user);
+
+    void resetPassword(User user, String newPassword);
 }

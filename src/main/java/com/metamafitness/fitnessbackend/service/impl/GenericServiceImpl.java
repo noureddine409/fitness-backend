@@ -28,7 +28,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     public T update(Long id, T entity) throws ElementNotFoundException {
         final Optional<T> foundEntity = genericRepository.findById(id);
 
-        if (!foundEntity.isPresent()) {
+        if (foundEntity.isEmpty()) {
             LOG.warn(CoreConstant.Exception.NOT_FOUND);
             throw new ElementNotFoundException(null, new ElementNotFoundException(), CoreConstant.Exception.NOT_FOUND, new Object[]{id});
     }
@@ -58,7 +58,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
         if (id == null)
             return genericRepository.save(entity);
         final Optional<T> entityExist = genericRepository.findById(id);
-        if (!entityExist.isPresent()) {
+        if (entityExist.isEmpty()) {
             return genericRepository.save(entity);
         } else {
             LOG.warn(CoreConstant.Exception.ALREADY_EXISTS);

@@ -34,6 +34,8 @@ public class User extends GenericEntity implements UserDetails {
 
     private boolean enabled;
 
+    private String resetId;
+
     private String RefreshTokenId;
     @Enumerated(EnumType.STRING)
     private GenericEnum.Gender gender;
@@ -50,6 +52,13 @@ public class User extends GenericEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<AppUserRole> roles;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    private List<User> followers;
 
     public void addRole(AppUserRole role) {
         if (roles == null) {
