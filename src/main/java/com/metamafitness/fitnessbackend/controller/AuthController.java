@@ -122,6 +122,8 @@ public class AuthController extends GenericController<User, UserDto> {
         return ResponseEntity.ok().body(ForgetPasswordResponse.builder().message("email send successfully").build());
     }
 
+    // TODO add end point resend verification mail
+
     private DecodedJWT getDecodedResetToken(HttpServletRequest request) {
         String jwtResetToken = jwtProvider.extractTokenFromRequest(request);
         return jwtProvider.getDecodedJWT(jwtResetToken, GenericEnum.JwtTokenType.RESET);

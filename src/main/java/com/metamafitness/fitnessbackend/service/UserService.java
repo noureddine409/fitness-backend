@@ -23,4 +23,6 @@ public interface UserService extends GenericService<User>{
     JwtToken generateResetPasswordToken(User user);
 
     void resetPassword(User user, String newPassword);
+
+    boolean checkPassword(User user, String password) ;
 }
