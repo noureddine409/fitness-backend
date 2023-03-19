@@ -12,8 +12,15 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResetPasswordRequest {
+public class AuthenticatedResetPasswordRequest {
+
+    @NotBlank
+    @ValidPassword
+    private String oldPassword;
+
     @NotBlank
     @ValidPassword
     private String newPassword;
+
+
 }

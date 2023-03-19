@@ -14,6 +14,8 @@ public class CoreConstant {
         public static final String DELETE_ELEMENT = "message.exception.delete.element";
         public static final String FIND_ELEMENTS = "message.exception.find.elements";
 
+        public static final String INVALID_PASSWORD = "message.exception.invalid-password";
+
         public static final String USER_ROLE_ALREADY_CREATED = "message.exception.info.UserRoleCreated";
 
         public static final String ADMIN_ROLE_ALREADY_CREATED = "message.exception.info.AdminRoleCreated";

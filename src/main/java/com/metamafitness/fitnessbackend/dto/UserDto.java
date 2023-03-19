@@ -1,15 +1,19 @@
 package com.metamafitness.fitnessbackend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.metamafitness.fitnessbackend.model.Address;
-import com.metamafitness.fitnessbackend.model.AppUserRole;
+import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
-import com.metamafitness.fitnessbackend.model.PhoneNumber;
+import com.metamafitness.fitnessbackend.validator.ValidPassword;
+import com.metamafitness.fitnessbackend.validator.ValidPhoneNumber;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -17,13 +21,19 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class UserDto extends GenericDto{
+public class UserDto extends GenericDto {
+    @NotBlank
     private String firstName;
+    @NotBlank
     private String lastName;
-
+    @Email
+    @NotNull
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Length(min = CoreConstant.Validation.PASSWORD_SIZE_MIN, max = CoreConstant.Validation.PASSWORD_SIZE_MAX)
+    @NotBlank
+    @ValidPassword
     private String password;
     private LocalDate birthDay;
 
@@ -32,18 +42,15 @@ public class UserDto extends GenericDto{
     private String verificationCode;
 
     private String bio;
-
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean enabled;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String RefreshTokenId;
-
+    @NotNull
     private GenericEnum.Gender gender;
-
-
     private AddressDto address;
-
-
+    @ValidPhoneNumber
     private PhoneNumberDto phoneNumber;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<AppUserRoleDto> roles;

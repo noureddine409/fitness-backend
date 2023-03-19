@@ -207,4 +207,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         user.setResetId(null);
         userRepository.save(user);
     }
+
+    @Override
+    public boolean checkPassword(User user, String password) {
+        return passwordEncoder.matches(password, user.getPassword());
+    }
 }

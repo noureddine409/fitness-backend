@@ -120,16 +120,20 @@ public class AuthController extends GenericController<User, UserDto> {
         mailSenderService.sendEmail(user.getEmail(), "reset password", mailModel, "reset-password.html");
 
         return ResponseEntity.ok().body(ForgetPasswordResponse.builder().message("email send successfully").build());
-
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
-                                           HttpServletRequest request){
+    // TODO add end point resend verification mail
+
+    private DecodedJWT getDecodedResetToken(HttpServletRequest request) {
         String jwtResetToken = jwtProvider.extractTokenFromRequest(request);
-        DecodedJWT decodedResetToken = jwtProvider.getDecodedJWT(jwtResetToken, GenericEnum.JwtTokenType.RESET);
+        return jwtProvider.getDecodedJWT(jwtResetToken, GenericEnum.JwtTokenType.RESET);
+    }
+
+    @GetMapping("/forget-password/verify-token")
+    public ResponseEntity<JwtToken> sendForgetPassword(HttpServletRequest request) {
+        DecodedJWT decodedResetToken = getDecodedResetToken(request);
         Long userId = Long.valueOf(decodedResetToken.getSubject());
-        String resetTokenId = decodedResetToken .getId();
+        String resetTokenId = decodedResetToken.getId();
 
         User user = userService.findById(userId);
 
@@ -139,9 +143,29 @@ public class AuthController extends GenericController<User, UserDto> {
         } catch (NullPointerException e) {
             throw new BusinessException(e.getMessage(), e.getCause(), null, null);
         }
+
+        return new ResponseEntity<>(JwtToken.builder().token(decodedResetToken.getToken()).expiresIn(decodedResetToken.getExpiresAtAsInstant()).createdAt(decodedResetToken.getIssuedAtAsInstant()).build(), HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
+                                           HttpServletRequest request){
+        DecodedJWT decodedResetToken = getDecodedResetToken(request);
+        Long userId = Long.valueOf(decodedResetToken.getSubject());
+        String resetTokenId = decodedResetToken.getId();
+
+        User user = userService.findById(userId);
+
+        try {
+            if (!resetTokenId.equals(user.getResetId()))
+                throw new UnauthorizedException(null, new UnauthorizedException(), CoreConstant.Exception.AUTHORIZATION_INVALID_TOKEN, null);
+        } catch (NullPointerException e) {
+            throw new BusinessException(e.getMessage(), e.getCause(), null, null);
+        }
+
         userService.resetPassword(user, resetPasswordRequest.getNewPassword());
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/token")

@@ -1,11 +1,14 @@
 package com.metamafitness.fitnessbackend.controller;
 
 
+import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.GenericDto;
-import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEntity;
+import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.GenericService;
+import com.metamafitness.fitnessbackend.service.UserService;
 import com.metamafitness.fitnessbackend.utils.ClassTypeProvider;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -13,9 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public abstract class GenericController<T extends GenericEntity, D extends GenericDto> {
@@ -29,6 +36,9 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
 
     @Autowired
     private ClassTypeProvider classTypeProvider;
+
+    @Autowired
+    private UserService userService;
 
     public ModelMapper getModelMapper() {
         return modelMapper;
@@ -57,29 +67,26 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
-    public ResponseEntity<D> save(@RequestBody D dto) throws ElementAlreadyExistException {
-        T entity = convertToEntity(dto);
-        T savedEntity = genericService.save(entity);
-        return new ResponseEntity<D>(convertToDto(savedEntity), HttpStatus.CREATED);
+    protected Long getCurrentUserId() throws BusinessException {
+        final Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+
+        if(Objects.isNull(authentication.getPrincipal())){
+            LOG.error(CoreConstant.Exception.AUTHENTICATION_NULL_PRINCIPAL);
+            throw new BusinessException(null, new BusinessException(), CoreConstant.Exception.AUTHENTICATION_NULL_PRINCIPAL, null);
+        }
+        return (Long) authentication.getPrincipal();
     }
 
-    @GetMapping("/")
+    protected User getCurrentUser() throws ElementNotFoundException {
+        return userService.findById(getCurrentUserId());
+    }
+
+
+    @GetMapping("/{id}")
 
     public ResponseEntity<D> getById(@PathVariable("id") Long id) throws ElementNotFoundException {
         return new ResponseEntity<D>(convertToDto(genericService.findById(id)), HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<D> update(@PathVariable("id") Long id, @RequestBody D dto) throws ElementNotFoundException {
-        dto.setId(id);
-        T entity = genericService.update(id, convertToUpdateEntity(dto));
-        return new ResponseEntity<>(convertToDto(entity), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable("id") Long id) throws ElementNotFoundException {
-        return new ResponseEntity<Boolean>(genericService.delete(id), HttpStatus.OK);
     }
 
 }
