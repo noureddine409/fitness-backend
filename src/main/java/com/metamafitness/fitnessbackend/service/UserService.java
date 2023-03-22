@@ -8,6 +8,10 @@ public interface UserService extends GenericService<User>{
 
     User findByEmail(String email) throws ElementNotFoundException;
 
+    User findByEmail_v2(String email);
+
+
+
     void sendVerificationEmail(User user, String siteURL);
 
     void generateVerificationCode(User user);

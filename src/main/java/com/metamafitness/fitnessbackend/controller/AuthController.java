@@ -1,6 +1,10 @@
 package com.metamafitness.fitnessbackend.controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.*;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
@@ -14,6 +18,7 @@ import com.metamafitness.fitnessbackend.service.UserService;
 import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,12 +27,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController extends GenericController<User, UserDto> {
+
+    @Value("${google.clientId}")
+    String googleClientId;
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -51,6 +62,59 @@ public class AuthController extends GenericController<User, UserDto> {
     private String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
         return siteURL.replace(request.getServletPath(), "");
+    }
+
+    @PostMapping("/google-social-login")
+    public ResponseEntity<JwtTokenResponseDto> socialLogin(@RequestBody SocialTokenDto tokenDto)
+            throws UnauthorizedException, IOException {
+        GoogleIdTokenVerifier.Builder verifier =
+                new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                        .setAudience(Collections.singletonList(googleClientId));
+        final GoogleIdToken googleIdToken = GoogleIdToken.parse(verifier.getJsonFactory(), tokenDto.getValue());
+        final GoogleIdToken.Payload payload = googleIdToken.getPayload();
+        User existingUser = userService.findByEmail_v2(payload.getEmail());
+
+        if (existingUser == null) {
+            // User is logging in for the first time with GitHub
+            // Create a new user account and generate access and refresh tokens
+            User newUser = new User();
+            newUser.setEmail(payload.getEmail());
+            newUser.setPassword(UUID.randomUUID().toString());
+            newUser.setEnabled(Boolean.TRUE);
+
+            // Save the new user account to the database
+            newUser = userService.save(newUser);
+
+            // Generate access and refresh tokens
+            JwtToken accessToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.ACCESS);
+            JwtToken refreshToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.REFRESH);
+
+            return ResponseEntity
+                    .ok()
+                    .body(
+                            JwtTokenResponseDto.builder()
+                                    .accessToken(accessToken)
+                                    .refreshToken(refreshToken)
+                                    .build()
+                    );
+        } else {
+            // User already exists in the database
+            // Generate access and refresh tokens and update the refresh token ID
+            JwtToken accessToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.ACCESS);
+            JwtToken refreshToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.REFRESH);
+            String refreshTokenId = jwtProvider.getDecodedJWT(refreshToken.getToken(), GenericEnum.JwtTokenType.REFRESH).getId();
+
+            existingUser.setRefreshTokenId(refreshTokenId);
+            userService.update(existingUser.getId(), existingUser);
+            return ResponseEntity
+                    .ok()
+                    .body(
+                            JwtTokenResponseDto.builder()
+                                    .accessToken(accessToken)
+                                    .refreshToken(refreshToken)
+                                    .build()
+                    );
+        }
     }
 
 
@@ -149,7 +213,7 @@ public class AuthController extends GenericController<User, UserDto> {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
-                                           HttpServletRequest request){
+                                           HttpServletRequest request) {
         DecodedJWT decodedResetToken = getDecodedResetToken(request);
         Long userId = Long.valueOf(decodedResetToken.getSubject());
         String resetTokenId = decodedResetToken.getId();
