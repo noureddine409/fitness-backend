@@ -151,7 +151,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         admin.addRole(userRole);
         admin.addRole(trainerRole);
         admin.setEnabled(Boolean.TRUE);
-
+        userRepository.save(admin);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         trainer.addRole(userRole);
         trainer.addRole(trainerRole);
         trainer.setEnabled(Boolean.TRUE);
-
+        userRepository.save(trainer);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         dev.setPassword(passwordEncoder.encode(dev.getPassword()));
         dev.addRole(devRole);
         dev.setEnabled(Boolean.TRUE);
-
+        userRepository.save(dev);
 
     }
 
