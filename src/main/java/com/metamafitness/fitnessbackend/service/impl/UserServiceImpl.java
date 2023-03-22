@@ -96,6 +96,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
+    public User findByEmail_v2(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
     public void sendVerificationEmail(User user, String siteURL) {
         String subject = "Please Verify your email address";
 
