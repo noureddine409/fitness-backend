@@ -4,12 +4,11 @@ import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.User;
 
-public interface UserService extends GenericService<User>{
+public interface UserService extends GenericService<User> {
 
     User findByEmail(String email) throws ElementNotFoundException;
 
     User findByEmail_v2(String email);
-
 
 
     void sendVerificationEmail(User user, String siteURL);
@@ -28,5 +27,5 @@ public interface UserService extends GenericService<User>{
 
     void resetPassword(User user, String newPassword);
 
-    boolean checkPassword(User user, String password) ;
+    boolean checkPassword(User user, String password);
 }

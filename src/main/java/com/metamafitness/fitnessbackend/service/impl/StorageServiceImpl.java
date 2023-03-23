@@ -51,6 +51,7 @@ public class StorageServiceImpl implements StorageService {
         LOG.info("Downloading file with name {}", fileName);
         return amazonS3.getObject(s3BucketName, fileName).getObjectContent();
     }
+
     @Override
     @Async
     public String save(final MultipartFile multipartFile) {
@@ -60,7 +61,7 @@ public class StorageServiceImpl implements StorageService {
             LOG.info("Uploading file with name {}", fileName);
             PutObjectRequest putObjectRequest = new PutObjectRequest(s3BucketName, fileName, file);
             putObjectRequest.setCannedAcl(CannedAccessControlList.PublicRead);
-            amazonS3.putObject(putObjectRequest) ;
+            amazonS3.putObject(putObjectRequest);
             Files.delete(file.toPath()); // Remove the file locally created in the project folder
             return String.format("https://%s.s3.amazonaws.com/%s", s3BucketName, fileName);
         } catch (AmazonServiceException e) {
@@ -71,6 +72,7 @@ public class StorageServiceImpl implements StorageService {
         return null;
 
     }
+
     @Override
     public void delete(final String fileName) {
         amazonS3.deleteObject(s3BucketName, fileName);
