@@ -2,6 +2,7 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.JoinDto;
+import com.metamafitness.fitnessbackend.dto.JoinTreatDto;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Join;
@@ -40,11 +41,16 @@ public class JoinController extends GenericController<Join, JoinDto> {
         return new ResponseEntity<>(convertToDto(joinService.save(join)), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/accept/{id_request}")
-    public ResponseEntity<JoinDto> acceptRequestJoinAsTrainer(@PathVariable("id_request") Long id)  {
+    @PatchMapping("/treat/{id_request}")
+    public ResponseEntity<JoinDto> treatRequestJoinAsTrainer(@PathVariable("id_request") Long id, @RequestBody JoinTreatDto joinTreatDto)  {
+        final Boolean decision =  joinTreatDto.getAccepted();
         Join joinRequest = joinService.findById(id);
         if(joinRequest.getApproved())
             throw new BusinessException(new BusinessException(), CoreConstant.Exception.JOIN_REQUEST_ALREADY_HANDLED, null);
+        if(!decision) {
+            joinService.delete(joinRequest.getId());
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
         final TrainerRole trainerRole = trainerRoleService.findByName(GenericEnum.RoleName.TRAINER);
         joinRequest.getSender().addRole(trainerRole);
         joinRequest.setApproved(Boolean.TRUE);
