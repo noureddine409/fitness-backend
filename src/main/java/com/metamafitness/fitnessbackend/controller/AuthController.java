@@ -24,6 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,14 +45,12 @@ public class AuthController extends GenericController<User, UserDto> {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
-    private final
-    JwtProvider jwtProvider;
+    private final JwtProvider jwtProvider;
 
     private final MailSenderService mailSenderService;
 
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtProvider jwtProvider,
-                          MailSenderService mailSenderService) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtProvider jwtProvider, MailSenderService mailSenderService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtProvider = jwtProvider;
@@ -65,13 +65,12 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/google-social-login")
-    public ResponseEntity<JwtTokenResponseDto> socialLogin(@RequestBody SocialTokenDto tokenDto)
-            throws UnauthorizedException, IOException {
-        GoogleIdTokenVerifier.Builder verifier =
-                new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                        .setAudience(Collections.singletonList(googleClientId));
+    public ResponseEntity<JwtTokenResponseDto> googleSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException, IOException {
+        GoogleIdTokenVerifier.Builder verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory()).setAudience(Collections.singletonList(googleClientId));
         final GoogleIdToken googleIdToken = GoogleIdToken.parse(verifier.getJsonFactory(), tokenDto.getValue());
         final GoogleIdToken.Payload payload = googleIdToken.getPayload();
+
+
         User existingUser = userService.findByEmail_v2(payload.getEmail());
 
         if (existingUser == null) {
@@ -81,6 +80,9 @@ public class AuthController extends GenericController<User, UserDto> {
             newUser.setEmail(payload.getEmail());
             newUser.setPassword(UUID.randomUUID().toString());
             newUser.setEnabled(Boolean.TRUE);
+            newUser.setProfilePicture((String) payload.get("picture"));
+            newUser.setLastName((String) payload.get("family_name"));
+            newUser.setFirstName((String) payload.get("given_name"));
 
             // Save the new user account to the database
             newUser = userService.save(newUser);
@@ -89,14 +91,7 @@ public class AuthController extends GenericController<User, UserDto> {
             JwtToken accessToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.ACCESS);
             JwtToken refreshToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.REFRESH);
 
-            return ResponseEntity
-                    .ok()
-                    .body(
-                            JwtTokenResponseDto.builder()
-                                    .accessToken(accessToken)
-                                    .refreshToken(refreshToken)
-                                    .build()
-                    );
+            return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
         } else {
             // User already exists in the database
             // Generate access and refresh tokens and update the refresh token ID
@@ -106,21 +101,52 @@ public class AuthController extends GenericController<User, UserDto> {
 
             existingUser.setRefreshTokenId(refreshTokenId);
             userService.update(existingUser.getId(), existingUser);
-            return ResponseEntity
-                    .ok()
-                    .body(
-                            JwtTokenResponseDto.builder()
-                                    .accessToken(accessToken)
-                                    .refreshToken(refreshToken)
-                                    .build()
-                    );
+            return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
         }
     }
 
 
+    @PostMapping("/facebook-social-login")
+    public ResponseEntity<JwtTokenResponseDto> facebookSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException {
+        Facebook facebook = new FacebookTemplate(tokenDto.getValue());
+        final String [] fields = {"email", "picture"};
+        org.springframework.social.facebook.api.User fbUser = facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
+
+        User existingUser = userService.findByEmail_v2(fbUser.getEmail());
+
+        if (existingUser == null) {
+            // User is logging in for the first time with GitHub
+            // Create a new user account and generate access and refresh tokens
+            User newUser = new User();
+            newUser.setEmail(fbUser.getEmail());
+            newUser.setPassword(UUID.randomUUID().toString());
+            newUser.setEnabled(Boolean.TRUE);
+            newUser.setLastName(fbUser.getLastName());
+            newUser.setFirstName(fbUser.getFirstName());
+
+            // Save the new user account to the database
+            newUser = userService.save(newUser);
+
+            // Generate access and refresh tokens
+            JwtToken accessToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.ACCESS);
+            JwtToken refreshToken = jwtProvider.generateToken(newUser, GenericEnum.JwtTokenType.REFRESH);
+
+            return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
+        } else {
+            // User already exists in the database
+            // Generate access and refresh tokens and update the refresh token ID
+            JwtToken accessToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.ACCESS);
+            JwtToken refreshToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.REFRESH);
+            String refreshTokenId = jwtProvider.getDecodedJWT(refreshToken.getToken(), GenericEnum.JwtTokenType.REFRESH).getId();
+
+            existingUser.setRefreshTokenId(refreshTokenId);
+            userService.update(existingUser.getId(), existingUser);
+            return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
+        }
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, HttpServletRequest request)
-            throws ElementAlreadyExistException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, HttpServletRequest request) throws ElementAlreadyExistException {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
         User savedUser = userService.save(convertedUser);
@@ -139,11 +165,9 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenResponseDto> login(@RequestBody UserLoginDto userLoginDto)
-            throws UnauthorizedException, ElementNotFoundException {
+    public ResponseEntity<JwtTokenResponseDto> login(@RequestBody UserLoginDto userLoginDto) throws UnauthorizedException, ElementNotFoundException {
 
-        Authentication authToken =
-                new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword());
 
         Authentication authResult;
 
@@ -162,14 +186,7 @@ public class AuthController extends GenericController<User, UserDto> {
         User connectedUser = userService.findById(authenticatedUser.getId());
         connectedUser.setRefreshTokenId(refreshTokenId);
         userService.update(connectedUser.getId(), connectedUser);
-        return ResponseEntity
-                .ok()
-                .body(
-                        JwtTokenResponseDto.builder()
-                                .accessToken(accessToken)
-                                .refreshToken(refreshToken)
-                                .build()
-                );
+        return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
     @PostMapping("/forget-password")
@@ -212,8 +229,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
-                                           HttpServletRequest request) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
         DecodedJWT decodedResetToken = getDecodedResetToken(request);
         Long userId = Long.valueOf(decodedResetToken.getSubject());
         String resetTokenId = decodedResetToken.getId();
@@ -257,13 +273,6 @@ public class AuthController extends GenericController<User, UserDto> {
         user.setRefreshTokenId(jwtProvider.getDecodedJWT(newRefreshToken.getToken(), GenericEnum.JwtTokenType.REFRESH).getId());
         userService.update(userId, user);
 
-        return ResponseEntity
-                .ok()
-                .body(
-                        JwtTokenResponseDto.builder()
-                                .accessToken(newAccessToken)
-                                .refreshToken(newRefreshToken)
-                                .build()
-                );
+        return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build());
     }
 }
