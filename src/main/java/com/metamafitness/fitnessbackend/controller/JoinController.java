@@ -10,10 +10,12 @@ import com.metamafitness.fitnessbackend.model.TrainerRole;
 import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.JoinService;
 import com.metamafitness.fitnessbackend.service.TrainerRoleService;
-import com.metamafitness.fitnessbackend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -21,14 +23,13 @@ import org.springframework.web.bind.annotation.*;
 public class JoinController extends GenericController<Join, JoinDto> {
 
     private final JoinService joinService;
-    private final UserService userService;
 
     private final TrainerRoleService trainerRoleService;
 
 
-    public JoinController(JoinService joinService, UserService userService, TrainerRoleService trainerRoleService) {
+    public JoinController(JoinService joinService, TrainerRoleService trainerRoleService) {
         this.joinService = joinService;
-        this.userService = userService;
+
         this.trainerRoleService = trainerRoleService;
     }
 
@@ -41,13 +42,26 @@ public class JoinController extends GenericController<Join, JoinDto> {
         return new ResponseEntity<>(convertToDto(joinService.save(join)), HttpStatus.CREATED);
     }
 
+    @GetMapping
+    public ResponseEntity<List<JoinDto>> findAll(@RequestParam(name = "page", required = false) Integer page,
+                                                 @RequestParam(name = "size", required = false) Integer size) {
+        if(page == null) page = CoreConstant.Pagination.DEFAULT_PAGE_NUMBER;
+        if(size == null) size = CoreConstant.Pagination.DEFAULT_PAGE_SIZE;
+
+        List<Join> joins = joinService.findAll(page, size).toList();
+        List<JoinDto> joinsDtos = joins.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(joinsDtos, HttpStatus.OK);
+    }
+
     @PatchMapping("/treat/{id_request}")
-    public ResponseEntity<JoinDto> treatRequestJoinAsTrainer(@PathVariable("id_request") Long id, @RequestBody JoinTreatDto joinTreatDto)  {
-        final Boolean decision =  joinTreatDto.getAccepted();
+    public ResponseEntity<JoinDto> treatRequestJoinAsTrainer(@PathVariable("id_request") Long id, @RequestBody JoinTreatDto joinTreatDto) {
+        final Boolean decision = joinTreatDto.getAccepted();
         Join joinRequest = joinService.findById(id);
-        if(joinRequest.getApproved())
+        if (joinRequest.getApproved())
             throw new BusinessException(new BusinessException(), CoreConstant.Exception.JOIN_REQUEST_ALREADY_HANDLED, null);
-        if(!decision) {
+        if (!decision) {
             joinService.delete(joinRequest.getId());
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
