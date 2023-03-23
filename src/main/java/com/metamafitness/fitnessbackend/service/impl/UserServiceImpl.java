@@ -91,8 +91,8 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User findByEmail(String email) throws ElementNotFoundException {
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()) return user.get();
-        throw new ElementNotFoundException(null, new ElementNotFoundException(), CoreConstant.Exception.NOT_FOUND, new Object[] {email});
+        if (user.isPresent()) return user.get();
+        throw new ElementNotFoundException(null, new ElementNotFoundException(), CoreConstant.Exception.NOT_FOUND, new Object[]{email});
     }
 
     @Override
@@ -124,11 +124,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public boolean verify(String code) {
         Optional<User> userFound = userRepository.findByVerificationCode(code);
 
-        if(userFound.isEmpty())
+        if (userFound.isEmpty())
             return false;
         else {
             User user = userFound.get();
-            if(user.isEnabled())
+            if (user.isEnabled())
                 return false;
             user.setVerificationCode(null);
             user.setEnabled(true);
@@ -147,7 +147,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 firstName(adminName).
                 build();
         if (userRepository.findByEmail(admin.getEmail()).isPresent())
-            return ;
+            return;
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         final AdminRole adminRole = adminRoleService.findByName(GenericEnum.RoleName.ADMIN);
         final TrainerRole trainerRole = trainerRoleService.findByName(GenericEnum.RoleName.TRAINER);
@@ -168,7 +168,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 firstName(trainerName).
                 build();
         if (userRepository.findByEmail(trainer.getEmail()).isPresent())
-            return ;
+            return;
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         final TrainerRole trainerRole = trainerRoleService.findByName(GenericEnum.RoleName.TRAINER);
         trainer.setPassword(passwordEncoder.encode(trainer.getPassword()));
@@ -188,7 +188,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 build();
         if (userRepository.findByEmail(dev.getEmail()).isPresent())
             if (userRepository.findByEmail(dev.getEmail()).isPresent())
-                return ;
+                return;
         final DevRole devRole = devRoleService.findByName(GenericEnum.RoleName.DEV);
         dev.setPassword(passwordEncoder.encode(dev.getPassword()));
         dev.addRole(devRole);
