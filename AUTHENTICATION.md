@@ -59,27 +59,41 @@ For reference here's how the Bearer token should be sent :
 
 #### Example POST Request (using `cURL`)
 ```shell
-curl -X POST --location "http://localhost:8080/api/activities" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwIiwicm9sZXMiOltdLCJpc3MiOiJTcG9ydCBOZXR3b3JrIiwiZXhwIjoxNjYwOTA1ODY3LCJpYXQiOjE2NjA5MDU1Njd9.YGX5rzB20I3akw8U4umVh3dkPJqOSnyYCHJWOIsm_Xg" \
-    -d "{
-          \"name\" : \"activityName\",
-          \"description\" : \"activityDescription\",
-          \"activityType\" : \"COLLECTIVE\",
-          \"rating\" : 5.0
-        }"
+curl --location 'http://localhost:8080/api/join-us' \
+--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOlsiUk9MRV9UUkFJTkVSIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiJdLCJleHAiOjE2Nzk2MTE0ODQsImlhdCI6MTY3OTYxMTE4NCwianRpIjoiNjY2N2QwNzktNjRkMS00MzlkLWE5NjgtMWI3YjRhMTA3N2NhIn0.ZjBXTduvrhZdHU11qvfpcrE3rLnSZtpKvsl3NuUGsAM' \
+--header 'Content-Type: application/json' \
+--data '{
+    "message": "message",
+    "expertise": "message",
+    "experience": "experience"
+}'
 ```
 
 #### On success response
 ```json
 {
-  "id":1,
-  "createdAt":"2022-08-19T12:42:47.375022473",
-  "updatedAt":"2022-08-19T12:42:47.375022473",
-  "name":"activityName",
-  "description":"activityDescription",
-  "activityType":"COLLECTIVE",
-  "rating":5.0
+    "id": 6,
+    "createdAt": "2023-03-23T21:29:07.1069532",
+    "updatedAt": null,
+    "expertise": "message",
+    "message": "message",
+    "approved": false,
+    "sender": {
+        "id": 1,
+        "createdAt": "2023-03-23T13:09:50.538154",
+        "updatedAt": "2023-03-23T21:28:25.048623",
+        "firstName": "admin",
+        "lastName": null,
+        "email": "admin@admin.me",
+        "birthDay": null,
+        "profilePicture": null,
+        "verificationCode": null,
+        "bio": null,
+        "gender": null,
+        "address": null,
+        "phoneNumber": null
+    },
+    "experience": "experience"
 }
 ```
 
