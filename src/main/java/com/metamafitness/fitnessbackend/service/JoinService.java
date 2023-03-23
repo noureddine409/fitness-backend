@@ -1,8 +1,10 @@
 package com.metamafitness.fitnessbackend.service;
 
-import com.metamafitness.fitnessbackend.dto.JoinDto;
 import com.metamafitness.fitnessbackend.model.Join;
-import com.metamafitness.fitnessbackend.service.GenericService;
+import org.springframework.data.domain.Page;
 
 public interface JoinService extends GenericService<Join> {
+
+    Page<Join> findAll(int page, int size);
+
 }

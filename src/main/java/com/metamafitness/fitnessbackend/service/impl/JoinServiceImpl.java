@@ -5,6 +5,10 @@ import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.model.Join;
 import com.metamafitness.fitnessbackend.repository.JoinRepository;
 import com.metamafitness.fitnessbackend.service.JoinService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -32,4 +36,10 @@ public class JoinServiceImpl extends GenericServiceImpl<Join> implements JoinSer
     }
 
 
+    @Override
+    public Page<Join> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("approved").ascending().and(Sort.by("createdAt").descending()).and(Sort.by("updatedAt").ascending()));
+        Page<Join> joins = joinRepository.findAll(pageable);
+        return joins;
+    }
 }
