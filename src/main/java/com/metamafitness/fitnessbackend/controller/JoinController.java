@@ -26,7 +26,6 @@ public class JoinController extends GenericController<Join, JoinDto> {
 
     private final TrainerRoleService trainerRoleService;
 
-
     public JoinController(JoinService joinService, TrainerRoleService trainerRoleService) {
         this.joinService = joinService;
 
