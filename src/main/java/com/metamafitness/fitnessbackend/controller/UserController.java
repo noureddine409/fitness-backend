@@ -39,6 +39,11 @@ public class UserController extends GenericController<User, UserDto> {
         return super.getById(id);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getMe() {
+        return new ResponseEntity<>(convertToDto(getCurrentUser()), HttpStatus.OK);
+    }
+
     @PatchMapping
     public ResponseEntity<UserDto> update(@RequestBody UserPatchDto userDto) {
         User currentUser = getCurrentUser();

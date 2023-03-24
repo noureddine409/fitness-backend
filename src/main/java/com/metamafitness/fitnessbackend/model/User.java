@@ -44,6 +44,9 @@ public class User extends GenericEntity implements UserDetails {
     private Address address;
 
     @Embedded
+    private SocialMedia socialMedia;
+
+    @Embedded
     private PhoneNumber phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
