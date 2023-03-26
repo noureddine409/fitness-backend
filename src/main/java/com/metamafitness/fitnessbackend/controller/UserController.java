@@ -58,7 +58,7 @@ public class UserController extends GenericController<User, UserDto> {
 
         // Set skipNullEnabled back to its original value
         modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
-
+        currentUser.setProfileCompleted(Boolean.TRUE);
         User updated = userService.update(currentUser.getId(), currentUser);
 
         return new ResponseEntity<>(convertToDto(updated), HttpStatus.OK);

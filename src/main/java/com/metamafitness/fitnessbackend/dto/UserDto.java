@@ -3,6 +3,7 @@ package com.metamafitness.fitnessbackend.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
+import com.metamafitness.fitnessbackend.model.SocialMedia;
 import com.metamafitness.fitnessbackend.validator.ValidPassword;
 import com.metamafitness.fitnessbackend.validator.ValidPhoneNumber;
 import lombok.EqualsAndHashCode;
@@ -41,6 +42,8 @@ public class UserDto extends GenericDto {
 
     private String verificationCode;
 
+    private boolean profileCompleted;
+
     private String bio;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean enabled;
@@ -52,6 +55,8 @@ public class UserDto extends GenericDto {
     private AddressDto address;
     @ValidPhoneNumber
     private PhoneNumberDto phoneNumber;
+
+    private SocialMediaDto socialMedia;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<AppUserRoleDto> roles;
 
