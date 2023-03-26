@@ -84,6 +84,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                     new Object[]{entity.getEmail()});
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        entity.setProfileCompleted(Boolean.FALSE);
         entity.addRole(userRole);
         return userRepository.save(entity);
     }

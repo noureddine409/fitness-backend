@@ -24,4 +24,6 @@ public class UserPatchDto {
     private AddressDto address;
     @ValidPhoneNumber
     private PhoneNumberDto phoneNumber;
+
+    private SocialMediaDto socialMedia;
 }
