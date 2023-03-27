@@ -107,7 +107,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public void sendVerificationEmail(User user) {
+    public boolean sendVerificationEmail(User user) {
         String subject = "Please Verify your email address";
 
         Map<String, Object> mailModel = new HashMap<>();
@@ -117,6 +117,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         mailModel.put("activationUrl", this.originUrl + "/verify-account?code=" + user.getVerificationCode());
 
         mailSenderService.sendEmail(user.getEmail(), subject, mailModel, "activate-account.html");
+        return true;
     }
 
     @Override
@@ -138,9 +139,8 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 return user;
             user.setVerificationCode(null);
             user.setEnabled(true);
-            User saved = userRepository.save(user);
 
-            return saved;
+            return userRepository.save(user);
         }
     }
 
