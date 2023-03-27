@@ -122,20 +122,20 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public boolean verify(String code) {
+    public User verify(String code) {
         Optional<User> userFound = userRepository.findByVerificationCode(code);
 
         if (userFound.isEmpty())
-            return false;
+            return null;
         else {
             User user = userFound.get();
             if (user.isEnabled())
-                return false;
+                return user;
             user.setVerificationCode(null);
             user.setEnabled(true);
-            userRepository.save(user);
+            User saved = userRepository.save(user);
 
-            return true;
+            return saved;
         }
     }
 
