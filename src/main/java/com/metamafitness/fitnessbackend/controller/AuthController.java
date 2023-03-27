@@ -143,12 +143,12 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto, HttpServletRequest request) throws ElementAlreadyExistException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws ElementAlreadyExistException {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
         User savedUser = userService.save(convertedUser);
 
-        userService.sendVerificationEmail(savedUser, getSiteURL(request));
+        userService.sendVerificationEmail(savedUser);
 
         return new ResponseEntity<>(convertToDto(savedUser), HttpStatus.CREATED);
     }

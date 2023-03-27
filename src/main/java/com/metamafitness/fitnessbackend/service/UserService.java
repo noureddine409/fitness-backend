@@ -11,7 +11,7 @@ public interface UserService extends GenericService<User> {
     User findByEmail_v2(String email);
 
 
-    void sendVerificationEmail(User user, String siteURL);
+    void sendVerificationEmail(User user);
 
     void generateVerificationCode(User user);
 
