@@ -50,6 +50,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Value("${dev.account.name}")
     private String devName;
 
+    @Value("${origin.url}")
+    private String originUrl;
+
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -64,6 +67,8 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private final DevRoleService devRoleService;
 
     private final JwtProvider jwtProvider;
+
+
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, MailSenderService mailSenderService,
                            UserRoleService userRoleService, AdminRoleService adminRoleService, TrainerRoleService trainerRoleService, DevRoleService devRoleService, JwtProvider jwtProvider) {
@@ -102,14 +107,14 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public void sendVerificationEmail(User user, String siteURL) {
+    public void sendVerificationEmail(User user) {
         String subject = "Please Verify your email address";
 
         Map<String, Object> mailModel = new HashMap<>();
         mailModel.put("token", user.getVerificationCode());
         mailModel.put("user", user);
         mailModel.put("signature", "https://fitness-app.com");
-        mailModel.put("activationUrl", siteURL + "/api/auth/verify?code=" + user.getVerificationCode());
+        mailModel.put("activationUrl", this.originUrl + "/verify-account?code=" + user.getVerificationCode());
 
         mailSenderService.sendEmail(user.getEmail(), subject, mailModel, "activate-account.html");
     }
