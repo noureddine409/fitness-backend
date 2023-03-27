@@ -15,7 +15,7 @@ public interface UserService extends GenericService<User> {
 
     void generateVerificationCode(User user);
 
-    boolean verify(String verificationCode);
+    User verify(String verificationCode);
 
     void saveAdmin();
 

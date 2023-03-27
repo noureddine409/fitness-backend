@@ -30,10 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -157,11 +154,15 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam("code") String code) {
-        if (userService.verify(code)) {
-            return new ResponseEntity<>("verify_success", HttpStatus.OK);
+    public ResponseEntity<JwtTokenResponseDto> verifyUser(@RequestParam("code") String code) {
+        User user = userService.verify(code);
+        if(Objects.isNull(user)) {
+            throw new UnauthorizedException();
         }
-        return new ResponseEntity<>("verify_fail", HttpStatus.UNAUTHORIZED);
+        JwtToken accessToken = jwtProvider.generateToken(user, GenericEnum.JwtTokenType.ACCESS);
+        JwtToken refreshToken = jwtProvider.generateToken(user, GenericEnum.JwtTokenType.REFRESH);
+
+        return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
     }
 
     @PostMapping("/login")
