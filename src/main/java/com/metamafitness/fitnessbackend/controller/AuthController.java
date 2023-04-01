@@ -200,7 +200,7 @@ public class AuthController extends GenericController<User, UserDto> {
         mailModel.put("token", resetToken.getToken());
         mailModel.put("user", user);
         mailModel.put("signature", "https://fitness-app.com");
-        mailModel.put("resetUrl", originApi + "/reset-password?code=" + resetToken.getToken());
+        mailModel.put("resetUrl", originApi + "/forget-password-verify?code=" + resetToken.getToken());
         mailSenderService.sendEmail(user.getEmail(), "reset password", mailModel, "reset-password.html");
 
         return ResponseEntity.ok().body(ForgetPasswordResponse.builder().message("email send successfully").build());
