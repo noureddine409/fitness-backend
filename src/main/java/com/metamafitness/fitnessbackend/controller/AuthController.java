@@ -39,7 +39,7 @@ public class AuthController extends GenericController<User, UserDto> {
     @Value("${google.clientId}")
     String googleClientId;
 
-    @Value("origin.url")
+    @Value("${origin.url}")
     private String originApi;
 
     private final UserService userService;
@@ -59,10 +59,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
 
-    private String getSiteURL(HttpServletRequest request) {
-        String siteURL = request.getRequestURL().toString();
-        return siteURL.replace(request.getServletPath(), "");
-    }
+
 
     @PostMapping("/google-social-login")
     public ResponseEntity<JwtTokenResponseDto> googleSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException, IOException {
@@ -150,8 +147,8 @@ public class AuthController extends GenericController<User, UserDto> {
     public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws ElementAlreadyExistException {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
-        boolean mailSendedFlag = userService.sendVerificationEmail(convertedUser);
-        if (mailSendedFlag) {
+        boolean mailSentFlag = userService.sendVerificationEmail(convertedUser);
+        if (mailSentFlag) {
             User savedUser = userService.save(convertedUser);
             return new ResponseEntity<>(convertToDto(savedUser), HttpStatus.CREATED);
         }
