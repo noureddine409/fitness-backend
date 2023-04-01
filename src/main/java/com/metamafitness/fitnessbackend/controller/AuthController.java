@@ -39,6 +39,9 @@ public class AuthController extends GenericController<User, UserDto> {
     @Value("${google.clientId}")
     String googleClientId;
 
+    @Value("origin.url")
+    private String originApi;
+
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
@@ -95,7 +98,7 @@ public class AuthController extends GenericController<User, UserDto> {
             JwtToken accessToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.ACCESS);
             JwtToken refreshToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.REFRESH);
             String refreshTokenId = jwtProvider.getDecodedJWT(refreshToken.getToken(), GenericEnum.JwtTokenType.REFRESH).getId();
-
+            existingUser.setEnabled(Boolean.TRUE);
             existingUser.setRefreshTokenId(refreshTokenId);
             userService.update(existingUser.getId(), existingUser);
             return ResponseEntity.ok().body(JwtTokenResponseDto.builder().accessToken(accessToken).refreshToken(refreshToken).build());
@@ -106,7 +109,7 @@ public class AuthController extends GenericController<User, UserDto> {
     @PostMapping("/facebook-social-login")
     public ResponseEntity<JwtTokenResponseDto> facebookSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException {
         Facebook facebook = new FacebookTemplate(tokenDto.getValue());
-        final String [] fields = {"email", "picture"};
+        final String[] fields = {"email", "picture"};
         org.springframework.social.facebook.api.User fbUser = facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
 
         User existingUser = userService.findByEmail_v2(fbUser.getEmail());
@@ -132,6 +135,7 @@ public class AuthController extends GenericController<User, UserDto> {
         } else {
             // User already exists in the database
             // Generate access and refresh tokens and update the refresh token ID
+            existingUser.setEnabled(Boolean.TRUE);
             JwtToken accessToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.ACCESS);
             JwtToken refreshToken = jwtProvider.generateToken(existingUser, GenericEnum.JwtTokenType.REFRESH);
             String refreshTokenId = jwtProvider.getDecodedJWT(refreshToken.getToken(), GenericEnum.JwtTokenType.REFRESH).getId();
@@ -147,7 +151,7 @@ public class AuthController extends GenericController<User, UserDto> {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
         boolean mailSendedFlag = userService.sendVerificationEmail(convertedUser);
-        if(mailSendedFlag){
+        if (mailSendedFlag) {
             User savedUser = userService.save(convertedUser);
             return new ResponseEntity<>(convertToDto(savedUser), HttpStatus.CREATED);
         }
@@ -157,7 +161,7 @@ public class AuthController extends GenericController<User, UserDto> {
     @GetMapping("/verify")
     public ResponseEntity<JwtTokenResponseDto> verifyUser(@RequestParam("code") String code) {
         User user = userService.verify(code);
-        if(Objects.isNull(user)) {
+        if (Objects.isNull(user)) {
             throw new UnauthorizedException();
         }
         JwtToken accessToken = jwtProvider.generateToken(user, GenericEnum.JwtTokenType.ACCESS);
@@ -192,14 +196,14 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/forget-password")
-    public ResponseEntity<ForgetPasswordResponse> sendForgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest, HttpServletRequest request) {
+    public ResponseEntity<ForgetPasswordResponse> sendForgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest  ) {
         User user = userService.findByEmail(forgetPasswordRequest.getEmail());
         JwtToken resetToken = userService.generateResetPasswordToken(user);
         Map<String, Object> mailModel = new HashMap<>();
         mailModel.put("token", resetToken.getToken());
         mailModel.put("user", user);
         mailModel.put("signature", "https://fitness-app.com");
-        mailModel.put("resetUrl", getSiteURL(request) + "api/auth/resetPassword?code=" + resetToken.getToken());
+        mailModel.put("resetUrl", originApi + "/reset-password?code=" + resetToken.getToken());
         mailSenderService.sendEmail(user.getEmail(), "reset password", mailModel, "reset-password.html");
 
         return ResponseEntity.ok().body(ForgetPasswordResponse.builder().message("email send successfully").build());
