@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ public class UserController extends GenericController<User, UserDto> {
     }
 
     @PatchMapping
-    public ResponseEntity<UserDto> update(@RequestBody UserPatchDto userDto) {
+    public ResponseEntity<UserDto> update(@RequestBody @Valid UserPatchDto userDto) {
         User currentUser = getCurrentUser();
         ModelMapper modelMapper = getModelMapper();
 
@@ -83,7 +84,7 @@ public class UserController extends GenericController<User, UserDto> {
     }
 
     @PatchMapping("/reset-password")
-    public ResponseEntity<UserDto> resetPassword(@RequestBody AuthenticatedResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<UserDto> resetPassword(@RequestBody @Valid AuthenticatedResetPasswordRequest resetPasswordRequest) {
         User currentUser = getCurrentUser();
 
         if (userService.checkPassword(currentUser, resetPasswordRequest.getOldPassword())) {
