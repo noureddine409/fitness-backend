@@ -29,6 +29,7 @@ import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.*;
 
@@ -62,7 +63,7 @@ public class AuthController extends GenericController<User, UserDto> {
 
 
     @PostMapping("/google-social-login")
-    public ResponseEntity<JwtTokenResponseDto> googleSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException, IOException {
+    public ResponseEntity<JwtTokenResponseDto> googleSocialLogin(@RequestBody @Valid SocialTokenDto tokenDto) throws UnauthorizedException, IOException {
         GoogleIdTokenVerifier.Builder verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory()).setAudience(Collections.singletonList(googleClientId));
         final GoogleIdToken googleIdToken = GoogleIdToken.parse(verifier.getJsonFactory(), tokenDto.getValue());
         final GoogleIdToken.Payload payload = googleIdToken.getPayload();
@@ -104,7 +105,7 @@ public class AuthController extends GenericController<User, UserDto> {
 
 
     @PostMapping("/facebook-social-login")
-    public ResponseEntity<JwtTokenResponseDto> facebookSocialLogin(@RequestBody SocialTokenDto tokenDto) throws UnauthorizedException {
+    public ResponseEntity<JwtTokenResponseDto> facebookSocialLogin(@RequestBody @Valid SocialTokenDto tokenDto) throws UnauthorizedException {
         Facebook facebook = new FacebookTemplate(tokenDto.getValue());
         final String[] fields = {"email", "picture"};
         org.springframework.social.facebook.api.User fbUser = facebook.fetchObject("me", org.springframework.social.facebook.api.User.class, fields);
@@ -144,7 +145,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userDto) throws ElementAlreadyExistException {
+    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserDto userDto) throws ElementAlreadyExistException {
         User convertedUser = convertToEntity(userDto);
         userService.generateVerificationCode(convertedUser);
         boolean mailSentFlag = userService.sendVerificationEmail(convertedUser);
@@ -168,7 +169,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenResponseDto> login(@RequestBody UserLoginDto userLoginDto) throws UnauthorizedException, ElementNotFoundException {
+    public ResponseEntity<JwtTokenResponseDto> login(@RequestBody @Valid UserLoginDto userLoginDto) throws UnauthorizedException, ElementNotFoundException {
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(userLoginDto.getEmail(), userLoginDto.getPassword());
 
@@ -193,7 +194,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/forget-password")
-    public ResponseEntity<ForgetPasswordResponse> sendForgetPassword(@RequestBody ForgetPasswordRequest forgetPasswordRequest  ) {
+    public ResponseEntity<ForgetPasswordResponse> sendForgetPassword(@RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest  ) {
         User user = userService.findByEmail(forgetPasswordRequest.getEmail());
         JwtToken resetToken = userService.generateResetPasswordToken(user);
         Map<String, Object> mailModel = new HashMap<>();
@@ -232,7 +233,7 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest, HttpServletRequest request) {
         DecodedJWT decodedResetToken = getDecodedResetToken(request);
         Long userId = Long.valueOf(decodedResetToken.getSubject());
         String resetTokenId = decodedResetToken.getId();
