@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController extends GenericController<User, UserDto> {
@@ -67,7 +70,12 @@ public class UserController extends GenericController<User, UserDto> {
     @PatchMapping("/profile-picture")
     public ResponseEntity<UserDto> changeProfilePicture(@RequestParam("profile-picture") MultipartFile profilePicture) {
         User currentUser = getCurrentUser();
-
+        final String currentProfilePictureURL = currentUser.getProfilePicture();
+        if(!(currentProfilePictureURL.isEmpty() || currentProfilePictureURL.isBlank() || Objects.isNull(currentProfilePictureURL))){
+            URI uri = URI.create(currentProfilePictureURL);
+            String currentProfilePicture = uri.getPath().substring(1);
+            storageService.delete(currentProfilePicture);
+        }
         String profilePicturePath = storageService.save(profilePicture);
         currentUser.setProfilePicture(profilePicturePath);
         User updated = userService.update(currentUser.getId(), currentUser);
