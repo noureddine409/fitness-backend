@@ -53,7 +53,7 @@ public class UserDto extends GenericDto {
     @NotNull
     private GenericEnum.Gender gender;
     private AddressDto address;
-    @ValidPhoneNumber
+
     private PhoneNumberDto phoneNumber;
 
     private SocialMediaDto socialMedia;
