@@ -7,6 +7,45 @@ public class GenericEnum {
         FEMALE
     }
 
+    public enum ProgramLevel{
+        FIRST_LEVEL,
+        SECOND_LEVEL,
+        THIRD_LEVEL,
+        All_LEVELS
+    }
+
+    public enum ProgramCategory {
+        FITNESS,
+        NUTRITION,
+        MINDSET
+    }
+
+    public enum ProgramOption {
+        YOGA,
+        DANCE,
+        Strength
+    }
+
+    public enum ProgramEquipment {
+        DUMBBELLS,
+        YOGA_MAT
+    }
+
+    public enum ProgramState {
+        IN_PROGRESS,
+        ARCHIVED,
+        SUBMITTED,
+        APPROVED
+
+    }
+
+    public enum SectionLevel {
+        FIRST_LEVEL,
+        SECOND_LEVEL,
+        THIRD_LEVEL
+
+    }
+
     public enum RoleName {
         ADMIN,
         USER,

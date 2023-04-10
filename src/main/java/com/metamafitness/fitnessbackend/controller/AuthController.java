@@ -145,8 +145,8 @@ public class AuthController extends GenericController<User, UserDto> {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserDto userDto) throws ElementAlreadyExistException {
-        User convertedUser = convertToEntity(userDto);
+    public ResponseEntity<UserDto> saveUser(@RequestBody @Valid UserRegisterDto userDto) throws ElementAlreadyExistException {
+        User convertedUser = getModelMapper().map(userDto, User.class);
         userService.generateVerificationCode(convertedUser);
         boolean mailSentFlag = userService.sendVerificationEmail(convertedUser);
         if (mailSentFlag) {
