@@ -9,7 +9,6 @@ import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.validator.validation.ProgramFileValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
