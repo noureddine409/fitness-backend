@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     private GenericRepository<T> genericRepository;
     @Autowired
     private ModelMapper modelMapper;
+
     @Override
     public T update(Long id, T entity) throws ElementNotFoundException {
         final Optional<T> foundEntity = genericRepository.findById(id);
@@ -31,7 +33,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
         if (foundEntity.isEmpty()) {
             LOG.warn(CoreConstant.Exception.NOT_FOUND);
             throw new ElementNotFoundException(null, new ElementNotFoundException(), CoreConstant.Exception.NOT_FOUND, new Object[]{id});
-    }
+        }
         T newEntity = foundEntity.get();
         entity.setCreatedAt(newEntity.getCreatedAt());
         modelMapper.map(entity, newEntity);
@@ -39,6 +41,17 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
         newEntity.setUpdatedAt(LocalDateTime.now());
 
         return genericRepository.save(newEntity);
+    }
+
+    @Override
+    public List<T> search(String keyword, Pageable pageable) throws BusinessException {
+        try {
+            return genericRepository.searchByKeyword(keyword, pageable).toList();
+        } catch (BusinessException e) {
+            throw new BusinessException(null, e, CoreConstant.Exception.FIND_ELEMENTS, null);
+
+        }
+
     }
 
     @Override
@@ -72,7 +85,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
             genericRepository.deleteById(id);
             return true;
         } catch (final BusinessException e) {
-            LOG.error("Error",e);
+            LOG.error("Error", e);
             throw new BusinessException(null, e, CoreConstant.Exception.DELETE_ELEMENT, new Object[]{id});
         }
     }
@@ -81,8 +94,7 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     public List<T> findAll() throws BusinessException {
         try {
             return genericRepository.findAll();
-        }
-        catch(BusinessException e){
+        } catch (BusinessException e) {
             throw new BusinessException(null, e, CoreConstant.Exception.FIND_ELEMENTS, null);
         }
     }

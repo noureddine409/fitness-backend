@@ -3,6 +3,9 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.GenericDto;
+import com.metamafitness.fitnessbackend.dto.JoinDto;
+import com.metamafitness.fitnessbackend.dto.SearchDto;
+import com.metamafitness.fitnessbackend.exception.BadRequestException;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEntity;
@@ -14,12 +17,17 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
@@ -84,9 +92,19 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
 
 
     @GetMapping("/{id}")
-
     public ResponseEntity<D> getById(@PathVariable("id") Long id) throws ElementNotFoundException {
         return new ResponseEntity<D>(convertToDto(genericService.findById(id)), HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<D>> search(@RequestBody SearchDto searchDto) throws BusinessException {
+        searchDto.validate();
+        Pageable pageable = PageRequest.of(searchDto.getPage(), searchDto.getSize());
+        List<T> entities = genericService.search(searchDto.getKeyword(), pageable);
+        List<D> dto = entities.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
 }

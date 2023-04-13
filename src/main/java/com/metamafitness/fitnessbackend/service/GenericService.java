@@ -4,6 +4,7 @@ import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEntity;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface GenericService<T extends GenericEntity> {
     public T findById(final Long id) throws ElementNotFoundException;
 
     public T save(final T entity) throws ElementAlreadyExistException;
+
+    List<T> search(String keyword, Pageable pageable) throws BusinessException;
 
     public boolean delete(final Long id) throws ElementNotFoundException;
 

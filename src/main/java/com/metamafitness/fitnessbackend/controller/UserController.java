@@ -37,11 +37,6 @@ public class UserController extends GenericController<User, UserDto> {
         return super.getModelMapper();
     }
 
-    @Override
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable("id") Long id) throws ElementNotFoundException {
-        return super.getById(id);
-    }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMe() {
