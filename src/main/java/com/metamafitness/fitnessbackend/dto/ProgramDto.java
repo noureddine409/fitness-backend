@@ -1,21 +1,18 @@
 package com.metamafitness.fitnessbackend.dto;
 
-
-import com.metamafitness.fitnessbackend.model.ProgramReview;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramEquipment;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramOption;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramCategory;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramLevel;
+import static com.metamafitness.fitnessbackend.model.GenericEnum.*;
 
 @Getter
 @Setter
@@ -23,26 +20,38 @@ import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramLevel;
 @AllArgsConstructor
 public class ProgramDto extends GenericDto {
 
+    @NotBlank
+    @Size(max = 255)
     private String name;
 
+    @NotNull
     private ProgramLevel level;
-
+    @NotNull
+    @DecimalMin(value = "0.00")
     private BigDecimal price;
 
+    @NotNull
     private ProgramCategory category;
 
+    @NotBlank
     private String description;
 
     private UserDto createdBy;
 
+    @Size(max = 255)
     private String motivationDescription;
 
+    @NotNull
+    @Positive
     private int durationPerDay; // in minutes
 
-
+    @NotEmpty
     private Set<ProgramOption> options;
 
+    @NotEmpty
     private Set<ProgramEquipment> equipments;
 
+    @NotEmpty
+    @Valid
     private List<ProgramSectionDto> sections = new ArrayList<>();
 }

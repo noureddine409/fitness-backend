@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -25,10 +24,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
-
-
-
-
 
 
 @RestControllerAdvice
@@ -79,6 +74,13 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
         return getResponseEntity(NOT_FOUND, e);
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleException(final IllegalArgumentException e) {
+        LOG.warn("Warning", e.getMessage());
+        return ResponseEntity.status(BAD_REQUEST).body(ErrorResponse.builder().code(BAD_REQUEST.value()).status(BAD_REQUEST).message(e.getMessage()).build());
+    }
+
     @ExceptionHandler(value = ElementAlreadyExistException.class)
     @ResponseStatus(FOUND)
     public ResponseEntity<ErrorResponse> handleException(final ElementAlreadyExistException e) {
@@ -96,8 +98,6 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
     public ResponseEntity<ErrorResponse> handleException(final BusinessException e) {
         return getResponseEntity(INTERNAL_SERVER_ERROR, e);
     }
-
-
 
 
     private ResponseEntity<ErrorResponse> getResponseEntity(final HttpStatus status, final BusinessException e) {
