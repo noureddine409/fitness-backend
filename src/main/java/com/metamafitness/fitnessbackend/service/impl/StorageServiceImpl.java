@@ -18,6 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -76,6 +78,13 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public void delete(final String fileName) {
         amazonS3.deleteObject(s3BucketName, fileName);
+    }
+
+    @Override
+    public List<String> storeFiles(List<MultipartFile> multipartFiles) {
+        return multipartFiles.parallelStream()
+                .map(this::save)
+                .collect(Collectors.toList());
     }
 
 }
