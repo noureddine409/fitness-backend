@@ -8,9 +8,11 @@ import com.metamafitness.fitnessbackend.model.SectionVideo;
 import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
+import com.metamafitness.fitnessbackend.validator.ValidVideoFiles;
 import com.metamafitness.fitnessbackend.validator.validation.ProgramFileValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -26,6 +28,7 @@ import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
 
 @RestController
 @RequestMapping("/api/programs")
+@Validated
 public class ProgramController extends GenericController<Program, ProgramDto> {
     private final ProgramFileValidator programFileValidator;
     private final StorageService storageService;
@@ -48,7 +51,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
     @PostMapping
     public ResponseEntity<ProgramDto> save(@RequestPart(value = "program", required = true) @Valid ProgramDto programDto,
-                                           @RequestPart(value = "files", required = true) List<MultipartFile> multipartFiles) {
+                                           @Valid @ValidVideoFiles @RequestPart(value = "files", required = true) List<MultipartFile> multipartFiles) {
         programFileValidator.validate(programDto, multipartFiles);
         Program programEntity = convertToEntity(programDto);
         List<String> videoUrls = storageService.storeFiles(multipartFiles);
