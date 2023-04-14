@@ -13,7 +13,9 @@ import javax.persistence.OneToOne;
 @AllArgsConstructor
 @Builder
 public class SectionVideo {
-    private String url;
+    private String videoUrl;
+
+    private String previewImageUrl;
     @OneToOne
     @JoinColumn(name = "section_id")
     private ProgramSection section;

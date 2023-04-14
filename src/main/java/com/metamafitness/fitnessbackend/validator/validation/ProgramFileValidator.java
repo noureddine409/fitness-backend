@@ -2,7 +2,6 @@ package com.metamafitness.fitnessbackend.validator.validation;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.ProgramDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +17,17 @@ public class ProgramFileValidator {
         this.messageSource = messageSource;
     }
 
-    public void validate(ProgramDto programDto, List<MultipartFile> multipartFiles) {
+    public void validate(ProgramDto programDto, List<MultipartFile> videos, List<MultipartFile> images) {
 
+        int numSections = programDto.getSections().size();
+        int numVideos = videos.size();
+        int numImages = images.size();
 
-        if (multipartFiles.size() != programDto.getSections().size()) {
+        boolean sectionVideoMismatch = numVideos != numSections;
+        boolean videoImageMismatch = numVideos != numImages;
+        boolean sectionImageMismatch = numSections != numImages;
+
+        if (sectionVideoMismatch || videoImageMismatch || sectionImageMismatch) {
             throw new IllegalArgumentException(messageSource.getMessage(CoreConstant.Exception.VALIDATION_FILE_SECTION_MISMATCH, null, null));
         }
     }

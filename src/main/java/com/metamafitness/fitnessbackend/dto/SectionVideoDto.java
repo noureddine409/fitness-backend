@@ -8,6 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class SectionVideoDto extends GenericDto{
-    private String url;
+    private String videoUrl;
+
+    private String previewImageUrl;
 
 }
