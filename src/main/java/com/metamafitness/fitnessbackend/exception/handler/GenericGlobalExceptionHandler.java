@@ -93,6 +93,12 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
         return getResponseEntity(CONFLICT, e);
     }
 
+    @ExceptionHandler(value = ResourceOwnershipException.class)
+    @ResponseStatus(FORBIDDEN)
+    public ResponseEntity<ErrorResponse> handleException(final ResourceOwnershipException e) {
+        return getResponseEntity(FORBIDDEN, e);
+    }
+
     @ExceptionHandler(value = BusinessException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleException(final BusinessException e) {

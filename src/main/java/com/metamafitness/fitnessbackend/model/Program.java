@@ -1,9 +1,6 @@
 package com.metamafitness.fitnessbackend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,6 +16,7 @@ import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 @Entity
 public class Program extends GenericEntity {

@@ -3,9 +3,7 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.GenericDto;
-import com.metamafitness.fitnessbackend.dto.JoinDto;
 import com.metamafitness.fitnessbackend.dto.SearchDto;
-import com.metamafitness.fitnessbackend.exception.BadRequestException;
 import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEntity;
@@ -17,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -64,16 +61,8 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
         return (T) getModelMapper().map(dto, getClasses()[0]);
     }
 
-    public T convertToUpdateEntity(D dto) {
-        return convertToEntity(dto);
-    }
 
-    <T, D> List<D> convertListToDto(List<T> source, Class<D> targetClass) {
-        return source
-                .stream()
-                .map(element -> modelMapper.map(element, targetClass))
-                .collect(Collectors.toList());
-    }
+
 
     protected Long getCurrentUserId() throws BusinessException {
         final Authentication authentication = SecurityContextHolder.getContext()
@@ -93,7 +82,7 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
 
     @GetMapping("/{id}")
     public ResponseEntity<D> getById(@PathVariable("id") Long id) throws ElementNotFoundException {
-        return new ResponseEntity<D>(convertToDto(genericService.findById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(convertToDto(genericService.findById(id)), HttpStatus.OK);
     }
 
     @PostMapping("/search")

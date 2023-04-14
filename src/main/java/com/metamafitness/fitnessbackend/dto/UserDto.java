@@ -6,10 +6,7 @@ import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.SocialMedia;
 import com.metamafitness.fitnessbackend.validator.ValidPassword;
 import com.metamafitness.fitnessbackend.validator.ValidPhoneNumber;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
@@ -21,7 +18,8 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@Builder
 public class UserDto extends GenericDto {
     @NotBlank
     private String firstName;

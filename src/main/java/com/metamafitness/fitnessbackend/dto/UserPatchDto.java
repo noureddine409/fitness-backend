@@ -2,15 +2,17 @@ package com.metamafitness.fitnessbackend.dto;
 
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.validator.ValidPhoneNumber;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserPatchDto {
 
     @NotBlank
