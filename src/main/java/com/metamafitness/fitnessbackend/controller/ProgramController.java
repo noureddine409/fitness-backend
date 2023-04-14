@@ -3,6 +3,7 @@ package com.metamafitness.fitnessbackend.controller;
 import com.google.common.collect.ImmutableList;
 import com.metamafitness.fitnessbackend.dto.ProgramDto;
 import com.metamafitness.fitnessbackend.dto.ProgramPatchDto;
+import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.model.ProgramSection;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_OWNERSHIP;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
 
@@ -53,7 +55,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     @PatchMapping("/{id}")
     public ResponseEntity<ProgramDto> update(@PathVariable("id") Long id, @RequestBody ProgramPatchDto programDto) {
         final Program program = programService.findById(id);
-        if(!isOwner(program)) {
+        if(isOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
         ModelMapper modelMapper = getModelMapper();
@@ -74,10 +76,47 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
     }
 
+    @PatchMapping("/{id}/submit")
+    public ResponseEntity<ProgramDto> submit(@PathVariable("id") Long id) {
+        final Program program = programService.findById(id);
+        if(isOwner(program)) {
+            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
+        }
+
+        program.setState(ProgramState.SUBMITTED);
+
+        Program submittedProgram = programService.update(id, program);
+
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
+    }
+
+    @PatchMapping("/{id}/submit")
+    public ResponseEntity<ProgramDto> validate(@PathVariable("id") Long id) {
+        final Program program = programService.findById(id);
+
+        program.setState(ProgramState.APPROVED);
+
+        Program submittedProgram = programService.update(id, program);
+
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Long id) {
+        final Program program = programService.findById(id);
+        if(isOwner(program)) {
+            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
+        }
+        if(!ProgramState.IN_PROGRESS.equals(program.getState())) {
+            throw new ResourceDeletionNotAllowedException(new ResourceDeletionNotAllowedException(), AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED, null);
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(programService.delete(id));
+    }
+
     private boolean isOwner(Program programFound) {
         final Long currentUserId = getCurrentUserId();
         final Long resourceOwnerId = programFound.getCreatedBy().getId();
-        return currentUserId.equals(resourceOwnerId);
+        return !currentUserId.equals(resourceOwnerId);
     }
 
     @PostMapping
