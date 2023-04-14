@@ -33,7 +33,7 @@ public class CoreConstant {
         public static final String AUTHORIZATION_MISSING_HEADER = "message.exception.authorization.missing.header";
         public static final String AUTHORIZATION_INVALID_HEADER = "message.exception.authorization.invalid.header";
         public static final String AUTHENTICATION_NULL_PRINCIPAL = "message.exception.authentication.null.pricipal";
-
+        public static final String AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED = "message.exception.authorization.resource-deletion";
         public static final String AUTHORIZATION_RESOURCE_OWNERSHIP = "message.exception.authorization.resource-ownership";
         public static final String VALIDATION_NOT_BLANK = "message.exception.validation.NotBlank";
         public static final String VALIDATION_NOT_NULL = "message.exception.validation.NotNull";
