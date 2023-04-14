@@ -90,7 +90,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
     }
 
-    @PatchMapping("/{id}/submit")
+    @PatchMapping("/{id}/validate")
     public ResponseEntity<ProgramDto> validate(@PathVariable("id") Long id) {
         final Program program = programService.findById(id);
 
