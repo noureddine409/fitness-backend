@@ -1,10 +1,7 @@
 package com.metamafitness.fitnessbackend.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -15,6 +12,7 @@ import javax.persistence.Enumerated;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PhoneNumber {
 
     @Enumerated(EnumType.STRING)

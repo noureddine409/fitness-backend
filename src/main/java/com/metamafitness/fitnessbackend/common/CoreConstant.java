@@ -22,7 +22,7 @@ public class CoreConstant {
 
         public static final String ADMIN_ROLE_ALREADY_CREATED = "message.exception.info.AdminRoleCreated";
 
-        public static final String TRAINER_ROLE_ALREADY_CREATED = "message.exception.info.TrainerRoleCreated"  ;
+        public static final String TRAINER_ROLE_ALREADY_CREATED = "message.exception.info.TrainerRoleCreated";
 
         public static final String ADMIN_ACCOUT_ALREADY_CREATED = "message.exception.info.AdminAccountCreated";
         public static final String FILE_UNAUTHORIZED_FORMAT = "message.exception.unauthorized-format";
@@ -32,19 +32,21 @@ public class CoreConstant {
         public static final String AUTHORIZATION_MISSING_TOKEN = "message.exception.authorization.missing.token";
         public static final String AUTHORIZATION_MISSING_HEADER = "message.exception.authorization.missing.header";
         public static final String AUTHORIZATION_INVALID_HEADER = "message.exception.authorization.invalid.header";
-        public static final String AUTHENTICATION_NULL_PRINCIPAL  = "message.exception.authentication.null.pricipal";
-        public static final String VALIDATION_NOT_BLANK  = "message.exception.validation.NotBlank";
-        public static final String VALIDATION_NOT_NULL  = "message.exception.validation.NotNull";
-        public static final String VALIDATION_POSITIVE_OR_ZERO  = "message.exception.validation.PositiveOrZero";
-        public static final String VALIDATION_FUTURE  = "message.exception.validation.Future";
-        public static final String VALIDATION_MIN  = "message.exception.validation.Min";
-        public static final String VALIDATION_MAX  = "message.exception.validation.Max";
-        public static final String VALIDATION_EMAIL  = "message.exception.validation.Email";
-        public static final String VALIDATION_SIZE  = "message.exception.validation.Size";
-        public static final String VALIDATION_PHONE_NUMBER  = "message.exception.validation.PhoneNumber";
-        public static final String VALIDATION_NO_DIGITS  = "message.exception.validation.NoDigits";
-        public static final String VALIDATION_POSTAL_CODE  = "message.exception.validation.PostalCode";
-        public static final String VALIDATION_ASSERT_TRUE  = "message.exception.validation.AssertTrue";
+        public static final String AUTHENTICATION_NULL_PRINCIPAL = "message.exception.authentication.null.pricipal";
+
+        public static final String AUTHORIZATION_RESOURCE_OWNERSHIP = "message.exception.authorization.resource-ownership";
+        public static final String VALIDATION_NOT_BLANK = "message.exception.validation.NotBlank";
+        public static final String VALIDATION_NOT_NULL = "message.exception.validation.NotNull";
+        public static final String VALIDATION_POSITIVE_OR_ZERO = "message.exception.validation.PositiveOrZero";
+        public static final String VALIDATION_FUTURE = "message.exception.validation.Future";
+        public static final String VALIDATION_MIN = "message.exception.validation.Min";
+        public static final String VALIDATION_MAX = "message.exception.validation.Max";
+        public static final String VALIDATION_EMAIL = "message.exception.validation.Email";
+        public static final String VALIDATION_SIZE = "message.exception.validation.Size";
+        public static final String VALIDATION_PHONE_NUMBER = "message.exception.validation.PhoneNumber";
+        public static final String VALIDATION_NO_DIGITS = "message.exception.validation.NoDigits";
+        public static final String VALIDATION_POSTAL_CODE = "message.exception.validation.PostalCode";
+        public static final String VALIDATION_ASSERT_TRUE = "message.exception.validation.AssertTrue";
         public static final String PAGINATION_PAGE_NUMBER = "message.exception.pagination.page.min";
         public static final String PAGINATION_PAGE_SIZE_MIN = "message.exception.pagination.size.min";
         public static final String PAGINATION_PAGE_SIZE_MAX = "message.exception.pagination.size.max";

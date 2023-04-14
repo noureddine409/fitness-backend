@@ -1,9 +1,6 @@
 package com.metamafitness.fitnessbackend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
@@ -11,6 +8,7 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class SocialMedia {
     private String facebook;

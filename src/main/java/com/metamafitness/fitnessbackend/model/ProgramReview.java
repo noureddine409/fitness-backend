@@ -1,9 +1,6 @@
 package com.metamafitness.fitnessbackend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -13,6 +10,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProgramReview extends GenericEntity {
 
     private String review;
