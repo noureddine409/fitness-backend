@@ -11,6 +11,8 @@ import com.metamafitness.fitnessbackend.model.SectionVideo;
 import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
+import com.metamafitness.fitnessbackend.validator.ValidPicture;
+import com.metamafitness.fitnessbackend.validator.ValidPreviewPictures;
 import com.metamafitness.fitnessbackend.validator.ValidVideoFiles;
 import com.metamafitness.fitnessbackend.validator.validation.ProgramFileValidator;
 import org.modelmapper.ModelMapper;
@@ -55,7 +57,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     @PatchMapping("/{id}")
     public ResponseEntity<ProgramDto> update(@PathVariable("id") Long id, @RequestBody ProgramPatchDto programDto) {
         final Program program = programService.findById(id);
-        if(isOwner(program)) {
+        if(isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
         ModelMapper modelMapper = getModelMapper();
@@ -79,7 +81,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     @PatchMapping("/{id}/submit")
     public ResponseEntity<ProgramDto> submit(@PathVariable("id") Long id) {
         final Program program = programService.findById(id);
-        if(isOwner(program)) {
+        if(isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
 
@@ -104,7 +106,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable("id") Long id) {
         final Program program = programService.findById(id);
-        if(isOwner(program)) {
+        if(isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
         if(!ProgramState.IN_PROGRESS.equals(program.getState())) {
@@ -113,7 +115,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(programService.delete(id));
     }
 
-    private boolean isOwner(Program programFound) {
+    private boolean isNotOwner(Program programFound) {
         final Long currentUserId = getCurrentUserId();
         final Long resourceOwnerId = programFound.getCreatedBy().getId();
         return !currentUserId.equals(resourceOwnerId);
@@ -121,22 +123,27 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
     @PostMapping
     public ResponseEntity<ProgramDto> save(@RequestPart(value = "program") @Valid ProgramDto programDto,
-                                           @Valid @ValidVideoFiles @RequestPart(value = "files") List<MultipartFile> multipartFiles) {
-        programFileValidator.validate(programDto, multipartFiles);
+                                           @Valid @ValidVideoFiles @RequestPart(value = "section-videos") List<MultipartFile> videos,
+                                           @Valid @ValidPreviewPictures @RequestPart(value = "section-pictures") List<MultipartFile> previewPictures,
+                                           @Valid @ValidPicture @RequestPart(value = "program-picture") MultipartFile picture) {
+        programFileValidator.validate(programDto, videos, previewPictures);
         Program programEntity = convertToEntity(programDto);
-        List<String> videoUrls = storageService.storeFiles(multipartFiles);
+        List<String> videoUrls = storageService.storeFiles(videos);
+        List<String> previewImageUrls = storageService.storeFiles(previewPictures);
+        String pictureUrl = storageService.save(picture);
 
-        Program savedProgram = createProgram(programEntity, videoUrls);
+        Program savedProgram = createProgram(programEntity, videoUrls, previewImageUrls, pictureUrl);
 
         ProgramDto savedProgramDto = convertToDto(savedProgram);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProgramDto);
     }
 
-    private Program createProgram(Program programEntity, List<String> videoUrls) {
+    private Program createProgram(Program programEntity, List<String> videoUrls, List<String> previewImageUrls, String pictureUrl) {
         ImmutableList<ProgramSection> sections = ImmutableList.copyOf(programEntity.getSections());
         IntStream.range(0, sections.size()).forEachOrdered(i -> sections.get(i).setVideo(
-                SectionVideo.builder().url(videoUrls.get(i)).build()));
+                SectionVideo.builder().previewImageUrl(previewImageUrls.get(i)).videoUrl(videoUrls.get(i)).build()));
         programEntity.setState(ProgramState.IN_PROGRESS);
+        programEntity.setPicture(pictureUrl);
         return programService.save(programEntity);
     }
 
