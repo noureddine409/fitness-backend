@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
 
     @Override
     public Program patch(Program program) {
+        program.setUpdatedAt(LocalDateTime.now());
         return programRepository.save(program);
     }
 }

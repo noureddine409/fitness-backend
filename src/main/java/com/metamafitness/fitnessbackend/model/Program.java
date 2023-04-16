@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramEquipment;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramOption;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramCategory;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramLevel;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
 
 @Getter
@@ -28,8 +25,7 @@ public class Program extends GenericEntity {
 
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    private ProgramLevel level;
+    private String level;
 
     @Enumerated(EnumType.STRING)
     private ProgramState state;
@@ -47,13 +43,11 @@ public class Program extends GenericEntity {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
-    @ElementCollection(targetClass = ProgramOption.class)
-    @Enumerated(EnumType.STRING)
-    private Set<ProgramOption> options;
+    @ElementCollection
+    private Set<String> options;
 
-    @ElementCollection(targetClass = ProgramEquipment.class)
-    @Enumerated(EnumType.STRING)
-    private Set<ProgramEquipment> equipments;
+    @ElementCollection
+    private Set<String> equipments;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
     private List<ProgramSection> sections;

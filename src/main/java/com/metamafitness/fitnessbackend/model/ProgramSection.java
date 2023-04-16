@@ -17,8 +17,8 @@ public class ProgramSection extends GenericEntity {
     private String title;
 
     private String description;
-    @Enumerated(EnumType.STRING)
-    private GenericEnum.SectionLevel level;
+
+    private String level;
 
     @ManyToOne
     @JoinColumn(name = "program_id")
