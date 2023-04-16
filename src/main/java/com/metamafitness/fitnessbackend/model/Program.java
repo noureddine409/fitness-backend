@@ -3,6 +3,7 @@ package com.metamafitness.fitnessbackend.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,8 @@ public class Program extends GenericEntity {
     private String name;
 
     private String picture;
+
+    private BigDecimal price;
 
     @Enumerated(EnumType.STRING)
     private ProgramLevel level;
@@ -52,8 +55,8 @@ public class Program extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private Set<ProgramEquipment> equipments;
 
-    @OneToMany(mappedBy = "program", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<ProgramSection> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
+    private List<ProgramSection> sections;
 
     @OneToMany(mappedBy = "program", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<ProgramReview> reviews = new ArrayList<>();

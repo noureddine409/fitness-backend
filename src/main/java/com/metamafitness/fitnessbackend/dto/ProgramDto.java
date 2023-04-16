@@ -53,5 +53,5 @@ public class ProgramDto extends GenericDto {
 
     @NotEmpty
     @Valid
-    private List<ProgramSectionDto> sections = new ArrayList<>();
+    private List<ProgramSectionDto> sections;
 }

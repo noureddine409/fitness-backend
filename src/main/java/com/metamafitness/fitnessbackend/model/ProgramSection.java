@@ -20,7 +20,7 @@ public class ProgramSection extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private GenericEnum.SectionLevel level;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "program_id")
     private Program program;
 
