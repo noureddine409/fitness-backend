@@ -23,6 +23,8 @@ public interface GenericService<T extends GenericEntity> {
     // TODO add pagination + sort + filter
     public List<T> findAll() throws BusinessException;
 
+    T patch(T entity) ;
+
     //public Page<T> findAll(final Pageable pageable, final List<Filter> filters);
 
 }

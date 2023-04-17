@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,11 +26,5 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
     public List<Program> findByCreator(Long id, int page, int size) throws ElementNotFoundException {
         Pageable pageable = PageRequest.of(page, size);
         return programRepository.findByCreatedBy_id(id, pageable);
-    }
-
-    @Override
-    public Program patch(Program program) {
-        program.setUpdatedAt(LocalDateTime.now());
-        return programRepository.save(program);
     }
 }

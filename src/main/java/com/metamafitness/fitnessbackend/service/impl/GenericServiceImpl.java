@@ -99,5 +99,11 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
         }
     }
 
+    @Override
+    public T patch(T entity) {
+        entity.setUpdatedAt(LocalDateTime.now());
+        return genericRepository.save(entity);
+    }
+
 
 }

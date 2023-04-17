@@ -1,19 +1,19 @@
 package com.metamafitness.fitnessbackend.validator.validation;
 
-import com.metamafitness.fitnessbackend.validator.ValidPicture;
+import com.metamafitness.fitnessbackend.validator.ValidVideo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
-public class PictureValidator implements ConstraintValidator<ValidPicture, MultipartFile> {
+public class VideoValidator implements ConstraintValidator<ValidVideo, MultipartFile> {
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
 
         if(file.isEmpty() || Objects.isNull(file)) return true;
         String contentType = file.getContentType();
-        return Objects.requireNonNull(contentType).contains("image");
+        return Objects.requireNonNull(contentType).contains("video");
     }
 }

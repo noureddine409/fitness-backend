@@ -25,7 +25,9 @@ public class Program extends GenericEntity {
 
     private BigDecimal price;
 
-    private String level;
+    @Enumerated(EnumType.STRING)
+    private GenericEnum.ProgramLevel level;
+
 
     @Enumerated(EnumType.STRING)
     private ProgramState state;
@@ -43,11 +45,14 @@ public class Program extends GenericEntity {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
-    @ElementCollection
-    private Set<String> options;
+    @ElementCollection(targetClass = GenericEnum.ProgramOption.class)
+    @Enumerated(EnumType.STRING)
+    private Set<GenericEnum.ProgramOption> options;
 
-    @ElementCollection
-    private Set<String> equipments;
+    @ElementCollection(targetClass = GenericEnum.ProgramEquipment.class)
+    @Enumerated(EnumType.STRING)
+    private Set<GenericEnum.ProgramEquipment> equipments;
+
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
     private List<ProgramSection> sections;
