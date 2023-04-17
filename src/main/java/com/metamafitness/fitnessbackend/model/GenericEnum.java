@@ -1,6 +1,6 @@
 package com.metamafitness.fitnessbackend.model;
 
-public class GenericEnum {
+public class   GenericEnum {
 
     public enum Gender {
         MALE,
@@ -8,9 +8,9 @@ public class GenericEnum {
     }
 
     public enum ProgramLevel{
-        FIRST_LEVEL,
-        SECOND_LEVEL,
-        THIRD_LEVEL,
+        BEGINNER,
+        INTERMIDIATE,
+        HARD,
         All_LEVELS
     }
 
@@ -21,14 +21,26 @@ public class GenericEnum {
     }
 
     public enum ProgramOption {
-        YOGA,
+        STRENGTH,
         DANCE,
-        Strength
+        NUTRITION_RECIPES,
+        MUSCLE_BUILDING,
+        HIIT,
+        CARDIO,
+        MOBILITY_FLEXIBILITY,
+        RECOVERY,
+        PILATES,
+        YOGA,
+        SLIM_SCULPT
     }
 
     public enum ProgramEquipment {
         DUMBBELLS,
-        YOGA_MAT
+        ADJUSTABLE_BENCH,
+        CORE_COMFORT_MAT,
+        POWER_LOOPS,
+        YOGA_MAT,
+        RESISTANCE_LOOPS
     }
 
     public enum ProgramState {
