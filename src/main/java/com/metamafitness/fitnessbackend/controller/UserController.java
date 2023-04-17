@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/users")
@@ -65,7 +66,7 @@ public class UserController extends GenericController<User, UserDto> {
     public ResponseEntity<UserDto> changeProfilePicture(@RequestParam("profile-picture") MultipartFile profilePicture) {
         User currentUser = getCurrentUser();
         final String currentProfilePictureURL = currentUser.getProfilePicture();
-        if(!(currentProfilePictureURL.isEmpty() || currentProfilePictureURL.isBlank())){
+        if(!( Objects.isNull(currentProfilePictureURL) || currentProfilePictureURL.isEmpty() || currentProfilePictureURL.isBlank())){
             URI uri = URI.create(currentProfilePictureURL);
             String currentProfilePicture = uri.getPath().substring(1);
             storageService.delete(currentProfilePicture);

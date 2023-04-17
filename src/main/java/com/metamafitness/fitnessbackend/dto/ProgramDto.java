@@ -25,6 +25,8 @@ public class ProgramDto extends GenericDto {
 
     @NotNull
     private ProgramLevel level;
+
+    private String picture;
     @NotNull
     @DecimalMin(value = "0.00")
     private BigDecimal price;
