@@ -3,14 +3,12 @@ package com.metamafitness.fitnessbackend.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramEquipment;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramOption;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramCategory;
-import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramLevel;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
 
 @Getter
@@ -25,8 +23,11 @@ public class Program extends GenericEntity {
 
     private String picture;
 
+    private BigDecimal price;
+
     @Enumerated(EnumType.STRING)
-    private ProgramLevel level;
+    private GenericEnum.ProgramLevel level;
+
 
     @Enumerated(EnumType.STRING)
     private ProgramState state;
@@ -44,16 +45,17 @@ public class Program extends GenericEntity {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
-    @ElementCollection(targetClass = ProgramOption.class)
+    @ElementCollection(targetClass = GenericEnum.ProgramOption.class)
     @Enumerated(EnumType.STRING)
-    private Set<ProgramOption> options;
+    private Set<GenericEnum.ProgramOption> options;
 
-    @ElementCollection(targetClass = ProgramEquipment.class)
+    @ElementCollection(targetClass = GenericEnum.ProgramEquipment.class)
     @Enumerated(EnumType.STRING)
-    private Set<ProgramEquipment> equipments;
+    private Set<GenericEnum.ProgramEquipment> equipments;
 
-    @OneToMany(mappedBy = "program", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<ProgramSection> sections = new ArrayList<>();
+
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
+    private List<ProgramSection> sections;
 
     @OneToMany(mappedBy = "program", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<ProgramReview> reviews = new ArrayList<>();

@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SectionVideoDto extends GenericDto{
+public class SectionVideoDto{
     private String videoUrl;
 
     private String previewImageUrl;

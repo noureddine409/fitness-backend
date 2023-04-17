@@ -8,7 +8,6 @@ import lombok.Setter;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -53,5 +52,5 @@ public class ProgramDto extends GenericDto {
 
     @NotEmpty
     @Valid
-    private List<ProgramSectionDto> sections = new ArrayList<>();
+    private List<ProgramSectionDto> sections;
 }
