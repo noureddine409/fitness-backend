@@ -50,11 +50,6 @@ public class   GenericEnum {
         APPROVED
 
     }
-        public enum BlogState {
-        IN_PROGRESS,
-        SUBMITTED,
-
-        }
 
     public enum SectionLevel {
         FIRST_LEVEL,

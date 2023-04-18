@@ -66,6 +66,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
         this.programRepository = programRepository;
     }
+
     @PatchMapping("/{id}")
     public ResponseEntity<ProgramDto> update(@PathVariable("id") Long id, @RequestBody ProgramPatchDto programDto) {
         final Program program = programService.findById(id);
