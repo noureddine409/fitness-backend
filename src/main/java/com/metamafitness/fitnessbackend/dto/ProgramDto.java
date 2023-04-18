@@ -27,6 +27,8 @@ public class ProgramDto extends GenericDto {
     private ProgramLevel level;
 
     private String picture;
+
+    private ProgramState state;
     @NotNull
     @DecimalMin(value = "0.00")
     private BigDecimal price;
@@ -46,10 +48,10 @@ public class ProgramDto extends GenericDto {
     @Positive
     private int durationPerDay; // in minutes
 
-    @NotEmpty
+
     private Set<ProgramOption> options;
 
-    @NotEmpty
+
     private Set<ProgramEquipment> equipments;
 
     @NotEmpty
