@@ -9,7 +9,6 @@ import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.model.ProgramSection;
 import com.metamafitness.fitnessbackend.model.SectionVideo;
 import com.metamafitness.fitnessbackend.model.User;
-import com.metamafitness.fitnessbackend.repository.ProgramRepository;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.UserService;
@@ -18,6 +17,7 @@ import com.metamafitness.fitnessbackend.validator.ValidPreviewPictures;
 import com.metamafitness.fitnessbackend.validator.ValidVideoFiles;
 import com.metamafitness.fitnessbackend.validator.validation.ProgramFileValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -46,8 +46,6 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     private final ProgramService programService;
 
     private final UserService userService;
-    private final ProgramRepository programRepository;
-
 
     @Override
     public Program convertToEntity(ProgramDto dto) {
@@ -57,14 +55,12 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         return entity;
     }
 
-    public ProgramController(StorageService storageService, ProgramService programService, ProgramFileValidator programFileValidator, UserService userService,
-                             ProgramRepository programRepository) {
+    public ProgramController(StorageService storageService, ProgramService programService, ProgramFileValidator programFileValidator, UserService userService) {
         this.storageService = storageService;
         this.programService = programService;
         this.programFileValidator = programFileValidator;
         this.userService = userService;
 
-        this.programRepository = programRepository;
     }
 
     @PatchMapping("/{id}")
@@ -100,7 +96,15 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
         List<ProgramDto> dto = programs.stream().map(this::convertToDto).collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+        long totalPrograms = programService.countByCreator(currentUserId);
+        int totalPages = (int) Math.ceil((double) totalPrograms / size);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
+
     }
 
     @GetMapping("/trainers/{trainerId}")
@@ -112,8 +116,13 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         List<Program> programs = programService.findByCreator(userFound.getId(), page, size);
 
         List<ProgramDto> dto = programs.stream().map(this::convertToDto).collect(Collectors.toList());
+        long totalPrograms = programService.countByCreator(id);
+        int totalPages = (int) Math.ceil((double) totalPrograms / size);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
 
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
     }
 
     @PatchMapping("/{id}/submit")

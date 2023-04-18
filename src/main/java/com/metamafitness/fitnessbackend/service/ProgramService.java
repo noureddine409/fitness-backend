@@ -7,4 +7,6 @@ import java.util.List;
 public interface ProgramService extends GenericService<Program> {
 
     List<Program> findByCreator(Long id, int page, int size);
+
+    long countByCreator(Long currentUserId);
 }
