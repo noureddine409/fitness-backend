@@ -27,4 +27,9 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
         Pageable pageable = PageRequest.of(page, size);
         return programRepository.findByCreatedBy_id(id, pageable);
     }
+
+    @Override
+    public long countByCreator(Long currentUserId) {
+        return programRepository.countByCreatedBy_id(currentUserId);
+    }
 }
