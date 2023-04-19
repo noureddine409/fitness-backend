@@ -5,6 +5,7 @@ import com.metamafitness.fitnessbackend.dto.ProgramDto;
 import com.metamafitness.fitnessbackend.dto.ProgramPatchDto;
 import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
+import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
 import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.model.ProgramSection;
 import com.metamafitness.fitnessbackend.model.SectionVideo;
@@ -29,8 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED;
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_OWNERSHIP;
+import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.*;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Pagination.DEFAULT_PAGE_NUMBER;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Pagination.DEFAULT_PAGE_SIZE;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.ProgramState;
@@ -46,7 +46,6 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     private final ProgramService programService;
 
     private final UserService userService;
-
     @Override
     public Program convertToEntity(ProgramDto dto) {
         final User currentUser = getCurrentUser();
@@ -131,10 +130,28 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         if (isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-
+        if(ProgramState.SUBMITTED.equals(program.getState()) || ProgramState.APPROVED.equals(program.getState())) {
+            throw new UnauthorizedException(new UnauthorizedException(), AUTHORIZATION_PROGRAM_SUBMISSION_NOT_ALLOWED, null);
+        }
         program.setState(ProgramState.SUBMITTED);
 
-        Program submittedProgram = programService.update(id, program);
+        Program submittedProgram = programService.patch(program);
+
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ProgramDto> cancel(@PathVariable("id") Long id) {
+        final Program program = programService.findById(id);
+        if (isNotOwner(program)) {
+            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
+        }
+        if(!ProgramState.SUBMITTED.equals(program.getState())) {
+            throw new UnauthorizedException(new UnauthorizedException(), AUTHORIZATION_PROGRAM_CANCEL_NOT_ALLOWED, null);
+        }
+        program.setState(ProgramState.IN_PROGRESS);
+
+        Program submittedProgram = programService.patch(program);
 
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
     }
@@ -153,6 +170,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable("id") Long id) {
         final Program program = programService.findById(id);
+
         if (isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }

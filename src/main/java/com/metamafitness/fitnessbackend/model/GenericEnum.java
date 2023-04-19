@@ -45,9 +45,9 @@ public class   GenericEnum {
 
     public enum ProgramState {
         IN_PROGRESS,
-        ARCHIVED,
         SUBMITTED,
-        APPROVED
+        APPROVED,
+        ARCHIVED
 
     }
 
