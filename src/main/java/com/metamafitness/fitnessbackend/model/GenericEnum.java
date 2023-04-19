@@ -50,6 +50,12 @@ public class   GenericEnum {
         ARCHIVED
 
     }
+    public enum BlogState {
+        IN_PROGRESS,
+        SUBMITTED,
+
+    }
+
 
     public enum SectionLevel {
         FIRST_LEVEL,
