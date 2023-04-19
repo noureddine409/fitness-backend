@@ -41,7 +41,7 @@ public class Program extends GenericEntity {
 
     private int durationPerDay; // in minutes
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
