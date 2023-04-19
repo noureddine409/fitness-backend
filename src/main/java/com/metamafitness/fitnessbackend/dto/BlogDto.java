@@ -20,7 +20,6 @@ public class BlogDto extends GenericDto{
     private String name;
     private String picture;
     @NotBlank
-    @Size(max = 255)
     private String description;
     private UserDto createdBy;
     @NotEmpty

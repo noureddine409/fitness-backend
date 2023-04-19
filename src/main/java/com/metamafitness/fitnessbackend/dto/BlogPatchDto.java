@@ -14,6 +14,7 @@ import java.util.Set;
 public class BlogPatchDto {
     @Size(max = 255)
     private String name;
+    @Size(max = 500)
     private String description;
     @NotEmpty
     private Set<String> tags;

@@ -18,6 +18,7 @@ public class Blog extends GenericEntity {
     private String picture;
     @Enumerated(EnumType.STRING)
     private BlogState state;
+    @Column(columnDefinition = "text")
     private String description;
     @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "created_by_id")
