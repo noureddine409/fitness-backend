@@ -19,7 +19,7 @@ public class Blog extends GenericEntity {
     @Enumerated(EnumType.STRING)
     private BlogState state;
     @Column(columnDefinition = "text")
-    private String description;
+    private String content;
     @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "created_by_id")
     private User createdBy;

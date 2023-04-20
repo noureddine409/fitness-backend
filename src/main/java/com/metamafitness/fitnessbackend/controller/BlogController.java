@@ -35,13 +35,11 @@ import static com.metamafitness.fitnessbackend.model.GenericEnum.BlogState;
 public class BlogController extends GenericController<Blog, BlogDto> {
     private final BlogService blogService;
     private final UserService userService;
-    private final BlogRepository blogRepository;
     private final StorageService storageService;
 
-    public BlogController(BlogService blogService, UserService userService, BlogRepository blogRepository, StorageService storageService) {
+    public BlogController(BlogService blogService, UserService userService, StorageService storageService) {
         this.blogService = blogService;
         this.userService = userService;
-        this.blogRepository = blogRepository;
         this.storageService = storageService;
     }
 
