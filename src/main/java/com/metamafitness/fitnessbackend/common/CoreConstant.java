@@ -38,6 +38,7 @@ public class CoreConstant {
         public static final String AUTHORIZATION_PROGRAM_SUBMISSION_NOT_ALLOWED = "message.exception.authorization.program-submission";
 
         public static final String AUTHORIZATION_PROGRAM_CANCEL_NOT_ALLOWED = "message.exception.authorization.program-cancel";
+        public static final String AUTHORIZATION_BLOG_CANCEL_NOT_ALLOWED = "message.exception.authorization.blog-cancel";
         public static final String AUTHORIZATION_RESOURCE_OWNERSHIP = "message.exception.authorization.resource-ownership";
         public static final String VALIDATION_NOT_BLANK = "message.exception.validation.NotBlank";
         public static final String VALIDATION_NOT_NULL = "message.exception.validation.NotNull";

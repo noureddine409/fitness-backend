@@ -4,8 +4,8 @@ import com.metamafitness.fitnessbackend.dto.BlogDto;
 import com.metamafitness.fitnessbackend.dto.BlogPatchDto;
 import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
+import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
 import com.metamafitness.fitnessbackend.model.Blog;
-import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.repository.BlogRepository;
 import com.metamafitness.fitnessbackend.service.BlogService;
@@ -24,10 +24,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED;
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_OWNERSHIP;
+import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.*;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Pagination.DEFAULT_PAGE_NUMBER;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Pagination.DEFAULT_PAGE_SIZE;
+import static com.metamafitness.fitnessbackend.model.GenericEnum.BlogState;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -127,9 +127,25 @@ public class BlogController extends GenericController<Blog, BlogDto> {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
 
-        blog.setState(GenericEnum.BlogState.SUBMITTED);
+        blog.setState(BlogState.SUBMITTED);
 
         Blog submittedBlog = blogService.update(id, blog);
+
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedBlog));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<BlogDto> cancel(@PathVariable("id") Long id) {
+        final Blog blog = blogService.findById(id);
+        if (isNotOwner(blog)) {
+            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
+        }
+        if (!BlogState.SUBMITTED.equals(blog.getState())) {
+            throw new UnauthorizedException(new UnauthorizedException(), AUTHORIZATION_BLOG_CANCEL_NOT_ALLOWED, null);
+        }
+        blog.setState(BlogState.IN_PROGRESS);
+
+        Blog submittedBlog = blogService.patch(blog);
 
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedBlog));
     }
@@ -140,7 +156,7 @@ public class BlogController extends GenericController<Blog, BlogDto> {
         if (isNotOwner(blog)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-        if (!GenericEnum.BlogState.IN_PROGRESS.equals(blog.getState())) {
+        if (!BlogState.IN_PROGRESS.equals(blog.getState())) {
             throw new ResourceDeletionNotAllowedException(new ResourceDeletionNotAllowedException(), AUTHORIZATION_RESOURCE_DELETION_NOT_ALLOWED, null);
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(blogService.delete(id));
@@ -159,7 +175,7 @@ public class BlogController extends GenericController<Blog, BlogDto> {
     }
 
     private Blog createBlog(Blog blogEntity, String pictureUrl) {
-        blogEntity.setState(GenericEnum.BlogState.IN_PROGRESS);
+        blogEntity.setState(BlogState.IN_PROGRESS);
         blogEntity.setPicture(pictureUrl);
         return blogService.save(blogEntity);
     }

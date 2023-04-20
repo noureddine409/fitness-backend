@@ -1,5 +1,6 @@
 package com.metamafitness.fitnessbackend.dto;
 
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Set;
+
+import static com.metamafitness.fitnessbackend.model.GenericEnum.*;
 
 @Getter
 @Setter
@@ -21,6 +24,7 @@ public class BlogDto extends GenericDto{
     private String picture;
     @NotBlank
     private String description;
+    private BlogState state;
     private UserDto createdBy;
     @NotEmpty
     private Set<String> tags;
