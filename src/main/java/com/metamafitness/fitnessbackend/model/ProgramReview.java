@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 @Builder
 public class ProgramReview extends GenericEntity {
 
+    private int rating;
+
     private String review;
 
     @ManyToOne

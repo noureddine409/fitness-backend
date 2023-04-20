@@ -3,6 +3,7 @@ package com.metamafitness.fitnessbackend.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,5 +28,8 @@ public class Join extends GenericEntity{
 
     @Column(nullable = false)
     private String experience;
+
+    @ElementCollection(targetClass = String.class)
+    private List<String> documents;
 
 }

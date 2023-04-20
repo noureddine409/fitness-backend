@@ -2,6 +2,8 @@ package com.metamafitness.fitnessbackend.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +24,6 @@ public class JoinDto extends GenericDto{
 
 
     private String experience;
+
+    private List<String> documents;
 }
