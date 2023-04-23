@@ -10,6 +10,7 @@ import com.metamafitness.fitnessbackend.service.ProgramSectionService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.validator.ValidPicture;
 import com.metamafitness.fitnessbackend.validator.ValidVideo;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,18 +71,22 @@ public class SectionController extends GenericController<ProgramSection, Program
 
         if (!video.isEmpty()) {
             String sectionVideoURL = programSectionFound.getVideo().getVideoUrl();
-            URI uri = URI.create(sectionVideoURL);
-            String currentSectionVideo = uri.getPath().substring(1);
-            storageService.delete(currentSectionVideo);
+            if(Objects.nonNull(sectionVideoURL)) {
+                URI uri = URI.create(sectionVideoURL);
+                String currentSectionVideo = uri.getPath().substring(1);
+                storageService.delete(currentSectionVideo);
+            }
             String newSectionVideoURL = storageService.save(video);
             programSectionFound.getVideo().setVideoUrl(newSectionVideoURL);
         }
 
         if (!previewImage.isEmpty()) {
             String previewImageUrl = programSectionFound.getVideo().getPreviewImageUrl();
-            URI uri = URI.create(previewImageUrl);
-            String currentSectionPreviewImage = uri.getPath().substring(1);
-            storageService.delete(currentSectionPreviewImage);
+            if(Objects.nonNull(previewImageUrl)){
+                URI uri = URI.create(previewImageUrl);
+                String currentSectionPreviewImage = uri.getPath().substring(1);
+                storageService.delete(currentSectionPreviewImage);
+            }
             String newSectionPreviewImageURL = storageService.save(previewImage);
             programSectionFound.getVideo().setPreviewImageUrl(newSectionPreviewImageURL);
         }

@@ -3,11 +3,13 @@ package com.metamafitness.fitnessbackend.dto;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import lombok.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Getter
