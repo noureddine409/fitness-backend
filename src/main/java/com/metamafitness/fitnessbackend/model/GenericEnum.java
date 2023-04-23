@@ -14,6 +14,21 @@ public class   GenericEnum {
         All_LEVELS
     }
 
+    public enum PaymentStatus {
+        SUCCEED,
+        FAILED
+    }
+    public enum PaymentMethod {
+        CREDIT_CARD,
+        PAYPAL,
+        BANK_TRANSFER,
+        BITCOIN,
+        APPLE_PAY,
+        GOOGLE_PAY,
+        AMAZON_PAY
+    }
+
+
     public enum ProgramCategory {
         FITNESS,
         NUTRITION,

@@ -48,7 +48,6 @@ public class User extends GenericEntity implements UserDetails {
     @Embedded
     private SocialMedia socialMedia;
 
-
     @Embedded
     private PhoneNumber phoneNumber;
 
@@ -58,6 +57,9 @@ public class User extends GenericEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<AppUserRole> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ProgramEnrollment> enrollments;
 
     public void addRole(AppUserRole role) {
         if (roles == null) {

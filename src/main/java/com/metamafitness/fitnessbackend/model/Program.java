@@ -57,6 +57,10 @@ public class Program extends GenericEntity {
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
     private List<ProgramSection> sections;
 
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
+    private List<ProgramEnrollment> enrollments;
+
+
     @OneToMany(mappedBy = "program", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<ProgramReview> reviews = new ArrayList<>();
 }
