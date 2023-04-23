@@ -21,6 +21,7 @@ public class Program extends GenericEntity {
 
     private String name;
 
+    @Column(nullable = false)
     private String picture;
 
     private BigDecimal price;
