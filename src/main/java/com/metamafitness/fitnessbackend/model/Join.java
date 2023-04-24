@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @Table(name = "trainer_request")
 public class Join extends GenericEntity{
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private GenericEnum.ProgramCategory expertise;//specialisation
 
     @Column(nullable = false,columnDefinition = "text")
