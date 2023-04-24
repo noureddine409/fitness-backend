@@ -46,9 +46,9 @@ public class Program extends GenericEntity {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
-    @ElementCollection(targetClass = GenericEnum.ProgramOption.class)
+    @ElementCollection(targetClass = GenericEnum.ProgramCategory.class)
     @Enumerated(EnumType.STRING)
-    private Set<GenericEnum.ProgramOption> options;
+    private Set<GenericEnum.ProgramCategory> options;
 
     @ElementCollection(targetClass = GenericEnum.ProgramEquipment.class)
     @Enumerated(EnumType.STRING)

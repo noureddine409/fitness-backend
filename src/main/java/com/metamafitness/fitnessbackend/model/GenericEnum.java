@@ -9,7 +9,7 @@ public class   GenericEnum {
 
     public enum ProgramLevel{
         BEGINNER,
-        INTERMIDIATE,
+        INTERMEDIATE,
         HARD,
         All_LEVELS
     }
@@ -32,10 +32,7 @@ public class   GenericEnum {
     public enum ProgramCategory {
         FITNESS,
         NUTRITION,
-        MINDSET
-    }
-
-    public enum ProgramOption {
+        MINDSET,
         STRENGTH,
         DANCE,
         NUTRITION_RECIPES,
@@ -47,6 +44,7 @@ public class   GenericEnum {
         PILATES,
         YOGA,
         SLIM_SCULPT
+
     }
 
     public enum ProgramEquipment {

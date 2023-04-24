@@ -44,7 +44,7 @@ public class ProgramPatchDto {
     private int durationPerDay; // in minutes
 
     @NotEmpty
-    private Set<GenericEnum.ProgramOption> options;
+    private Set<GenericEnum.ProgramCategory> options;
 
     @NotEmpty
     private Set<GenericEnum.ProgramEquipment> equipments;

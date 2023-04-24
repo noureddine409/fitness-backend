@@ -1,5 +1,6 @@
 package com.metamafitness.fitnessbackend.dto;
 
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 public class JoinDto extends GenericDto{
     @NotNull
-    private String expertise;
+    private GenericEnum.ProgramCategory expertise;//specialisation
     @NotNull
     private String message;
     private Boolean approved;
