@@ -9,33 +9,36 @@ import com.metamafitness.fitnessbackend.model.Join;
 import com.metamafitness.fitnessbackend.model.TrainerRole;
 import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.JoinService;
+import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.TrainerRoleService;
+import com.metamafitness.fitnessbackend.validator.ValidPreviewPictures;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/api/join-us")
+@AllArgsConstructor
 public class JoinController extends GenericController<Join, JoinDto> {
 
     private final JoinService joinService;
 
     private final TrainerRoleService trainerRoleService;
-
-    public JoinController(JoinService joinService, TrainerRoleService trainerRoleService) {
-        this.joinService = joinService;
-
-        this.trainerRoleService = trainerRoleService;
-    }
+    private final StorageService storageService;
 
     @PostMapping
-    public ResponseEntity<JoinDto> requestJoinAsTrainer(@RequestBody JoinDto joinDto) {
+    public ResponseEntity<JoinDto> requestJoinAsTrainer(@RequestPart(value = "join") @Valid JoinDto joinDto,@Valid @ValidPreviewPictures @RequestPart(value = "documents") List<MultipartFile> documents) {
         final User user = getCurrentUser();
         Join join = convertToEntity(joinDto);
+        List<String> previewImageUrls = storageService.storeFiles(documents);
+        join.setDocuments(previewImageUrls);
         join.setApproved(Boolean.FALSE);
         join.setSender(user);
         return new ResponseEntity<>(convertToDto(joinService.save(join)), HttpStatus.CREATED);
