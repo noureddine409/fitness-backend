@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "trainer_request")
 public class Join extends GenericEntity{
     @Column(nullable = false)
-    private String expertise;
+    private GenericEnum.ProgramCategory expertise;//specialisation
 
     @Column(nullable = false,columnDefinition = "text")
     private String message;

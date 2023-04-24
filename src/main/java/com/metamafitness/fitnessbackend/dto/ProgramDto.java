@@ -49,8 +49,7 @@ public class ProgramDto extends GenericDto {
     private int durationPerDay; // in minutes
 
 
-    private Set<ProgramOption> options;
-
+    private Set<ProgramCategory> options;
 
     private Set<ProgramEquipment> equipments;
 
