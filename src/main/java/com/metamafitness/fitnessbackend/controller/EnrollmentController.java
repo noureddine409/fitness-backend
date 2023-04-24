@@ -2,6 +2,7 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.dto.OrderDto;
 import com.metamafitness.fitnessbackend.dto.ProgramEnrollmentDto;
+import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.LinkNotFoundException;
 import com.metamafitness.fitnessbackend.exception.TransactionAlreadyCompletedException;
 import com.metamafitness.fitnessbackend.exception.UserAlreadyEnrolled;
@@ -37,7 +38,7 @@ public class EnrollmentController extends GenericController<ProgramEnrollment, P
     }
 
     @PostMapping("create-order/{programId}")
-    ResponseEntity<OrderDto> createEnrollmentOrder(@PathVariable("programId") Long programId) throws IOException {
+    ResponseEntity<OrderDto> createEnrollmentOrder(@PathVariable("programId") Long programId) throws IOException, ElementAlreadyExistException, UserAlreadyEnrolled {
         final Program program = programService.findById(programId);
         final Long currentUserId = getCurrentUserId();
         final ProgramEnrollment programEnrollment = programEnrollmentService.findByUserAndProgram(currentUserId, program.getId());
