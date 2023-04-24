@@ -16,7 +16,7 @@ public class Join extends GenericEntity{
     @Column(nullable = false)
     private String expertise;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "text")
     private String message;
 
     @Column(nullable = false)
@@ -26,7 +26,7 @@ public class Join extends GenericEntity{
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User sender;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "text")
     private String experience;
 
     @ElementCollection(targetClass = String.class)
