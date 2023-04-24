@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -99,10 +100,47 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
         return getResponseEntity(FORBIDDEN, e);
     }
 
+    @ExceptionHandler(value = UserAlreadyEnrolled.class)
+    @ResponseStatus(CONFLICT)
+    public ResponseEntity<ErrorResponse> handleException(final UserAlreadyEnrolled e) {
+        return getResponseEntity(CONFLICT, e);
+    }
+
+
     @ExceptionHandler(value = BusinessException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleException(final BusinessException e) {
         return getResponseEntity(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler(value = ResourceDeletionNotAllowedException.class)
+    @ResponseStatus(CONFLICT)
+    public ResponseEntity<ErrorResponse> handleException(final ResourceDeletionNotAllowedException e) {
+        return getResponseEntity(CONFLICT, e);
+    }
+
+    @ExceptionHandler(value = LinkNotFoundException.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleException(final LinkNotFoundException e) {
+        return getResponseEntity(INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler(value = TransactionAlreadyCompletedException.class)
+    @ResponseStatus(CONFLICT)
+    public ResponseEntity<ErrorResponse> handleException(final TransactionAlreadyCompletedException e) {
+        return getResponseEntity(CONFLICT, e);
+    }
+
+
+    @ExceptionHandler(IOException.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    public ResponseEntity<?> handleIOException(IOException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.builder()
+                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .message(ex.getMessage().split(":")[0])
+                        .build());
     }
 
 

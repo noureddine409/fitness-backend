@@ -29,8 +29,6 @@ public class Payment {
     private String paymentNote;
     private String paymentInvoiceId;
     private String paymentIntent;
-    private String paymentCartId;
-    // other fields as needed
 
     @Embedded
     private PaymentUser paymentUser;

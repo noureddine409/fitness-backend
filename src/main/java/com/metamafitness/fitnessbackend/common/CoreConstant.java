@@ -58,6 +58,12 @@ public class CoreConstant {
         public static final String VALIDATION_FILE_SIZE_MAX = "message.exception.validation.file-size";
 
         public static final String VALIDATION_FILE_SECTION_MISMATCH = "message.exception.validation.file-section-mismatch";
+
+        public static final String AUTHORIZATION_USER_ALREADY_ENROLLED = "message.exception.authorization.user-already-enrolled";
+
+        public static final String APPROVAL_LINK_NOT_FOUND = "message.exception.link-not-found";
+
+        public static final String TRANSACTION_ALREADY_COMPLETED = "message.exception.payment.transaction-already-completed";
     }
 
     public static class Pagination {

@@ -13,9 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProgramEnrollmentDto extends GenericDto {
-    private User user;
+    private UserDto user;
 
-    private Program program;
+    private ProgramDto program;
 
     private ProgramProgressDto progress;
 
