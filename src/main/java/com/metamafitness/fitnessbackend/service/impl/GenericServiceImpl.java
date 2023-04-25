@@ -57,6 +57,11 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     }
 
     @Override
+    public long countAll() {
+        return genericRepository.count();
+    }
+
+    @Override
     public T findById(Long id) throws ElementNotFoundException {
         final Optional<T> entityExist = genericRepository.findById(id);
         if (entityExist.isPresent()) {

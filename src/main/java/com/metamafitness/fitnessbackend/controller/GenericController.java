@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -105,7 +106,13 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
         List<D> dto = entities.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        long totalElements = genericService.countAll();
+        int totalPages = (int) Math.ceil((double) totalElements / searchDto.getSize());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
     }
 
 }
