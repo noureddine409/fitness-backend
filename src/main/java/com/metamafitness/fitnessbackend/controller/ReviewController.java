@@ -2,6 +2,7 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.dto.ProgramReviewDto;
 import com.metamafitness.fitnessbackend.dto.ReviewPatchDto;
+import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.model.ProgramReview;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.ALREADY_EXISTS;
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_RESOURCE_OWNERSHIP;
 
 @RestController
@@ -32,6 +34,10 @@ public class ReviewController extends GenericController<ProgramReview, ProgramRe
     public ResponseEntity<ProgramReviewDto> addReview(@PathVariable Long programId, @RequestBody ProgramReviewDto reviewDto) {
         Program program = programService.findById(programId);
         User currentUser = getCurrentUser();
+
+        if(reviewService.findByUserAndProgram(currentUser.getId(), program.getId())) {
+            throw new ElementAlreadyExistException(new ElementAlreadyExistException(), ALREADY_EXISTS, null);
+        }
         ProgramReview programReview = convertToEntity(reviewDto);
         programReview.setProgram(program);
         programReview.setCreatedBy(currentUser);
@@ -51,6 +57,16 @@ public class ReviewController extends GenericController<ProgramReview, ProgramRe
         ProgramReview updatedReview = reviewService.patch(review);
 
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(updatedReview));
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Boolean> delete(@PathVariable Long reviewId) {
+        ProgramReview review = reviewService.findById(reviewId);
+        if(isNotOwner(review)) {
+            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
+        }
+        Boolean deleted = reviewService.delete(reviewId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(deleted);
     }
 
     private boolean isNotOwner(ProgramReview review) {
