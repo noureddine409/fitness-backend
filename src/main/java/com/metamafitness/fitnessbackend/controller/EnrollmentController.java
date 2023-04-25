@@ -2,10 +2,8 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.dto.OrderDto;
 import com.metamafitness.fitnessbackend.dto.ProgramEnrollmentDto;
-import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
-import com.metamafitness.fitnessbackend.exception.LinkNotFoundException;
-import com.metamafitness.fitnessbackend.exception.TransactionAlreadyCompletedException;
-import com.metamafitness.fitnessbackend.exception.UserAlreadyEnrolled;
+import com.metamafitness.fitnessbackend.exception.*;
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.model.ProgramEnrollment;
 import com.metamafitness.fitnessbackend.service.PaymentService;
@@ -19,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.APPROVAL_LINK_NOT_FOUND;
-import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.AUTHORIZATION_USER_ALREADY_ENROLLED;
+import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.*;
 
 @RestController
 @RequestMapping("/api/enrollments")
@@ -40,6 +37,9 @@ public class EnrollmentController extends GenericController<ProgramEnrollment, P
     @PostMapping("create-order/{programId}")
     ResponseEntity<OrderDto> createEnrollmentOrder(@PathVariable("programId") Long programId) throws IOException, ElementAlreadyExistException, UserAlreadyEnrolled {
         final Program program = programService.findById(programId);
+        if( !GenericEnum.ProgramState.SUBMITTED.equals(program.getState())) { // in normal case we use APPROVED instead of SUBMITTED
+            throw new UnauthorizedPurchaseException(new UnauthorizedPurchaseException(), UNAUTHORIZED_PROGRAM_PURCHASE, null);
+        }
         final Long currentUserId = getCurrentUserId();
         final ProgramEnrollment programEnrollment = programEnrollmentService.findByUserAndProgram(currentUserId, program.getId());
         if (Objects.nonNull(programEnrollment)) {

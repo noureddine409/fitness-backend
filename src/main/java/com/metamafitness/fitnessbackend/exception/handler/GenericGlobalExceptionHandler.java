@@ -131,6 +131,12 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
         return getResponseEntity(CONFLICT, e);
     }
 
+    @ExceptionHandler(value = UnauthorizedPurchaseException.class)
+    @ResponseStatus(FORBIDDEN)
+    public ResponseEntity<ErrorResponse> handleException(final UnauthorizedPurchaseException e) {
+        return getResponseEntity(FORBIDDEN, e);
+    }
+
 
     @ExceptionHandler(IOException.class)
     @ResponseStatus(INTERNAL_SERVER_ERROR)

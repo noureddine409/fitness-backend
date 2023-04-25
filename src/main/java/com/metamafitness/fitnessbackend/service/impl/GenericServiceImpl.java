@@ -68,10 +68,13 @@ public class GenericServiceImpl<T extends GenericEntity> implements GenericServi
     @Override
     public T save(T entity) throws ElementAlreadyExistException {
         final Long id = entity.getId();
-        if (id == null)
+        if (id == null) {
+            entity.setCreatedAt(LocalDateTime.now());
             return genericRepository.save(entity);
+        }
         final Optional<T> entityExist = genericRepository.findById(id);
         if (entityExist.isEmpty()) {
+            entity.setCreatedAt(LocalDateTime.now());
             return genericRepository.save(entity);
         } else {
             LOG.warn(CoreConstant.Exception.ALREADY_EXISTS);

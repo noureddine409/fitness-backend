@@ -64,6 +64,7 @@ public class CoreConstant {
         public static final String APPROVAL_LINK_NOT_FOUND = "message.exception.link-not-found";
 
         public static final String TRANSACTION_ALREADY_COMPLETED = "message.exception.payment.transaction-already-completed";
+        public static final String UNAUTHORIZED_PROGRAM_PURCHASE = "message.exception.unauthorized.program-purchase";
     }
 
     public static class Pagination {
