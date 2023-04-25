@@ -3,8 +3,10 @@ package com.metamafitness.fitnessbackend.service.impl;
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.model.Join;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.repository.JoinRepository;
 import com.metamafitness.fitnessbackend.service.JoinService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +20,8 @@ public class JoinServiceImpl extends GenericServiceImpl<Join> implements JoinSer
 
     private final JoinRepository joinRepository;
 
-    public JoinServiceImpl(JoinRepository joinRepository) {
+    public JoinServiceImpl(GenericRepository<Join> genericRepository, ModelMapper modelMapper, JoinRepository joinRepository) {
+        super(genericRepository, modelMapper);
         this.joinRepository = joinRepository;
     }
 
@@ -39,7 +42,6 @@ public class JoinServiceImpl extends GenericServiceImpl<Join> implements JoinSer
     @Override
     public Page<Join> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("approved").ascending().and(Sort.by("createdAt").descending()).and(Sort.by("updatedAt").ascending()));
-        Page<Join> joins = joinRepository.findAll(pageable);
-        return joins;
+        return joinRepository.findAll(pageable);
     }
 }

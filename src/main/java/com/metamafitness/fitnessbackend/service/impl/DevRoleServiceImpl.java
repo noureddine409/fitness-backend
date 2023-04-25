@@ -8,7 +8,9 @@ import com.metamafitness.fitnessbackend.model.DevRole;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 
 import com.metamafitness.fitnessbackend.repository.DevRoleRepository;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.service.DevRoleService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,7 +19,8 @@ import java.util.Optional;
 public class DevRoleServiceImpl extends GenericServiceImpl<DevRole> implements DevRoleService {
     private final DevRoleRepository devRoleRepository;
 
-    public DevRoleServiceImpl(DevRoleRepository devRoleRepository) {
+    public DevRoleServiceImpl(GenericRepository<DevRole> genericRepository, ModelMapper modelMapper, DevRoleRepository devRoleRepository) {
+        super(genericRepository, modelMapper);
         this.devRoleRepository = devRoleRepository;
     }
 

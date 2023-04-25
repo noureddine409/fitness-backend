@@ -5,10 +5,12 @@ import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.*;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.repository.UserRepository;
 import com.metamafitness.fitnessbackend.service.*;
 import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import net.bytebuddy.utility.RandomString;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -71,7 +73,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, MailSenderService mailSenderService,
-                           UserRoleService userRoleService, AdminRoleService adminRoleService, TrainerRoleService trainerRoleService, DevRoleService devRoleService, JwtProvider jwtProvider) {
+                           UserRoleService userRoleService, AdminRoleService adminRoleService, TrainerRoleService trainerRoleService,
+                           DevRoleService devRoleService, JwtProvider jwtProvider, GenericRepository<User> genericRepository, ModelMapper modelMapper) {
+        super(genericRepository, modelMapper);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSenderService = mailSenderService;

@@ -6,7 +6,9 @@ import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.AdminRole;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.repository.AdminRoleRepository;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.service.AdminRoleService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,7 +17,8 @@ import java.util.Optional;
 public class AdminRoleServiceImpl extends GenericServiceImpl<AdminRole> implements AdminRoleService {
     private final AdminRoleRepository adminRoleRepository;
 
-    public AdminRoleServiceImpl(AdminRoleRepository adminRoleRepository) {
+    public AdminRoleServiceImpl(GenericRepository<AdminRole> genericRepository, ModelMapper modelMapper, AdminRoleRepository adminRoleRepository) {
+        super(genericRepository, modelMapper);
         this.adminRoleRepository = adminRoleRepository;
     }
 

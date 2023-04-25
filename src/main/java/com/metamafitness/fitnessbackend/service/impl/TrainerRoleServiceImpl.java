@@ -5,8 +5,10 @@ import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.TrainerRole;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.repository.TrainerRoleRepository;
 import com.metamafitness.fitnessbackend.service.TrainerRoleService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,15 +17,17 @@ import java.util.Optional;
 public class TrainerRoleServiceImpl extends GenericServiceImpl<TrainerRole> implements TrainerRoleService {
     private final TrainerRoleRepository trainerRoleRepository;
 
-    public TrainerRoleServiceImpl(TrainerRoleRepository trainerRoleRepository) {
-        this.trainerRoleRepository = trainerRoleRepository;
-    }
-
     @Override
     public TrainerRole findByName(GenericEnum.RoleName roleName) {
         Optional<TrainerRole> userRole = trainerRoleRepository.findByName(roleName);
         if (userRole.isPresent()) return userRole.get();
         throw new ElementNotFoundException(null, new ElementNotFoundException(), CoreConstant.Exception.NOT_FOUND, new Object[]{roleName});
+    }
+
+    public TrainerRoleServiceImpl(GenericRepository<TrainerRole> genericRepository, ModelMapper modelMapper, TrainerRoleRepository trainerRoleRepository) {
+        super(genericRepository, modelMapper);
+        this.trainerRoleRepository = trainerRoleRepository;
+
     }
 
     @Override

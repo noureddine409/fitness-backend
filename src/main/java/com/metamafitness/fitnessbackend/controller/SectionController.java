@@ -10,7 +10,6 @@ import com.metamafitness.fitnessbackend.service.ProgramSectionService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.validator.ValidPicture;
 import com.metamafitness.fitnessbackend.validator.ValidVideo;
-import org.apache.tomcat.util.buf.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

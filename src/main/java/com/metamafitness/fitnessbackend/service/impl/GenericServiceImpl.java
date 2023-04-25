@@ -10,7 +10,6 @@ import com.metamafitness.fitnessbackend.service.GenericService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +20,13 @@ import java.util.Optional;
 @Service
 public class GenericServiceImpl<T extends GenericEntity> implements GenericService<T> {
     final Logger LOG = LoggerFactory.getLogger(GenericServiceImpl.class);
-    @Autowired
-    private GenericRepository<T> genericRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private final GenericRepository<T> genericRepository;
+    private final ModelMapper modelMapper;
+
+    public GenericServiceImpl(GenericRepository<T> genericRepository, ModelMapper modelMapper) {
+        this.genericRepository = genericRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public T update(Long id, T entity) throws ElementNotFoundException {

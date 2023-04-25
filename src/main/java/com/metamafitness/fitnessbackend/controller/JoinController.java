@@ -33,6 +33,7 @@ public class JoinController extends GenericController<Join, JoinDto> {
     private final TrainerRoleService trainerRoleService;
     private final StorageService storageService;
 
+
     @PostMapping
     public ResponseEntity<JoinDto> requestJoinAsTrainer(@RequestPart(value = "join") @Valid JoinDto joinDto,@Valid @ValidPreviewPictures @RequestPart(value = "documents") List<MultipartFile> documents) {
         final User user = getCurrentUser();

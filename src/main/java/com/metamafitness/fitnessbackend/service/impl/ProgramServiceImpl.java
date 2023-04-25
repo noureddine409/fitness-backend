@@ -2,8 +2,10 @@ package com.metamafitness.fitnessbackend.service.impl;
 
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.Program;
+import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.repository.ProgramRepository;
 import com.metamafitness.fitnessbackend.service.ProgramService;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,9 +18,8 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
 
     private final ProgramRepository programRepository;
 
-
-
-    public ProgramServiceImpl(ProgramRepository programRepository) {
+    public ProgramServiceImpl(GenericRepository<Program> genericRepository, ModelMapper modelMapper, ProgramRepository programRepository) {
+        super(genericRepository, modelMapper);
         this.programRepository = programRepository;
 
     }
