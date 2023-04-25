@@ -1,6 +1,7 @@
 package com.metamafitness.fitnessbackend.service.impl;
 
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Program;
 import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.repository.ProgramRepository;
@@ -33,5 +34,14 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
     @Override
     public long countByCreator(Long currentUserId) {
         return programRepository.countByCreatedBy_id(currentUserId);
+    }
+    @Override
+    public List<Program> findByCategory(GenericEnum.ProgramCategory category, int page, int size) throws ElementNotFoundException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "state").and(Sort.by(Sort.Direction.DESC, "createdAt")));
+        return programRepository.findByCategory(category, pageable);
+    }
+    @Override
+    public long countByCategory(GenericEnum.ProgramCategory category) {
+        return programRepository.countByCategory(category);
     }
 }

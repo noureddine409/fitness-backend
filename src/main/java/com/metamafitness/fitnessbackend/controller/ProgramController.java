@@ -6,10 +6,7 @@ import com.metamafitness.fitnessbackend.dto.ProgramPatchDto;
 import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
-import com.metamafitness.fitnessbackend.model.Program;
-import com.metamafitness.fitnessbackend.model.ProgramSection;
-import com.metamafitness.fitnessbackend.model.SectionVideo;
-import com.metamafitness.fitnessbackend.model.User;
+import com.metamafitness.fitnessbackend.model.*;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.UserService;
@@ -86,6 +83,24 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         List<ProgramDto> dto = programs.stream().map(this::convertToDto).collect(Collectors.toList());
 
         long totalPrograms = programService.countByCreator(currentUserId);
+        int totalPages = (int) Math.ceil((double) totalPrograms / size);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
+
+    }
+    @GetMapping("/category")
+    public ResponseEntity<List<ProgramDto>> findProgramsByCategory(@RequestParam(value = "category") GenericEnum.ProgramCategory category,
+                                                                   @RequestParam(value = "page", defaultValue = "" + DEFAULT_PAGE_NUMBER) Integer page,
+                                                                   @RequestParam(value = "size", defaultValue = "" + DEFAULT_PAGE_SIZE) Integer size) {
+        List<Program> programs = programService.findByCategory(category, page, size);
+
+        List<ProgramDto> dto = programs.stream().map(this::convertToDto).collect(Collectors.toList());
+
+        long totalPrograms = programService.countByCategory(category);
         int totalPages = (int) Math.ceil((double) totalPrograms / size);
 
         HttpHeaders headers = new HttpHeaders();
