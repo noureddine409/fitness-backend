@@ -33,6 +33,14 @@ public class EnrollmentController extends GenericController<ProgramEnrollment, P
         this.programEnrollmentService = programEnrollmentService;
         this.paymentService = paymentService;
     }
+    @GetMapping("/exists/{programID}")
+    ResponseEntity<ProgramEnrollmentDto> enrolled(@PathVariable Long programID) {
+        ProgramEnrollment programEnrollment = programEnrollmentService.findByUserAndProgram(getCurrentUserId(), programID);
+        if(Objects.isNull(programEnrollment)) {
+            throw new ElementNotFoundException(new ElementNotFoundException(), NOT_FOUND, new Object[]{programID});
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(programEnrollment));
+    }
 
     @PostMapping("create-order/{programId}")
     ResponseEntity<OrderDto> createEnrollmentOrder(@PathVariable("programId") Long programId) throws IOException, ElementAlreadyExistException, UserAlreadyEnrolled {
