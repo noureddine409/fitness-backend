@@ -12,7 +12,7 @@ public class PictureValidator implements ConstraintValidator<ValidPicture, Multi
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
 
-        if(file.isEmpty() || Objects.isNull(file)) return true;
+        if( Objects.isNull(file)||file.isEmpty()) return true;
         String contentType = file.getContentType();
         return Objects.requireNonNull(contentType).contains("image");
     }

@@ -60,7 +60,7 @@ public class FitnessBackendApplication implements CommandLineRunner {
             log.info(CoreConstant.Success.USER_ROLE_CREATED_SUCCESSFULLY);
         }
         catch (ElementAlreadyExistException ex) {
-            log.info(CoreConstant.Exception.ADMIN_ACCOUT_ALREADY_CREATED);
+            log.info(CoreConstant.Exception.ADMIN_ACCOUNT_ALREADY_CREATED);
         }
 
 

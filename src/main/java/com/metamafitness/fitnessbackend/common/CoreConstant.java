@@ -24,9 +24,9 @@ public class CoreConstant {
 
         public static final String TRAINER_ROLE_ALREADY_CREATED = "message.exception.info.TrainerRoleCreated";
 
-        public static final String ADMIN_ACCOUT_ALREADY_CREATED = "message.exception.info.AdminAccountCreated";
+        public static final String ADMIN_ACCOUNT_ALREADY_CREATED = "message.exception.info.AdminAccountCreated";
         public static final String FILE_UNAUTHORIZED_FORMAT = "message.exception.unauthorized-format";
-        public static final String UNAUTHORIZIED_FILE_NUMBER = "message.exception.file-number";
+        public static final String UNAUTHORIZED_FILE_NUMBER = "message.exception.file-number";
         public static final String AUTHENTICATION_BAD_CREDENTIALS = "message.exception.authentication.bad.credentials";
         public static final String AUTHORIZATION_INVALID_TOKEN = "message.exception.authorization.invalid.token";
         public static final String AUTHORIZATION_MISSING_TOKEN = "message.exception.authorization.missing.token";

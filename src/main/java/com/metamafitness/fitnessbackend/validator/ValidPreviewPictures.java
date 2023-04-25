@@ -1,7 +1,6 @@
 package com.metamafitness.fitnessbackend.validator;
 
 import com.metamafitness.fitnessbackend.validator.validation.PreviewPicturesValidator;
-import com.metamafitness.fitnessbackend.validator.validation.VideoFileValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

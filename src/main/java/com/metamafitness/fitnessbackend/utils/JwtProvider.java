@@ -47,8 +47,6 @@ public class JwtProvider {
     @Value("${jwt.refresh-token.expiration-in-weeks}")
     private int refreshTokenExpirationInWeeks;
 
-    @Value("${jwt.token.issuer}")
-    private String tokenIssuer;
 
     public JwtToken generateToken(User user, GenericEnum.JwtTokenType tokenType) throws BusinessException {
 
@@ -153,7 +151,7 @@ public class JwtProvider {
 
         String token = authorizationHeader.replace(bearerPrefix, Strings.EMPTY);
 
-        if (token == null || token.isBlank())
+        if (token.isBlank())
             throw new UnauthorizedException(null, new UnauthorizedException(), CoreConstant.Exception.AUTHORIZATION_MISSING_TOKEN, null);
 
         return token;
