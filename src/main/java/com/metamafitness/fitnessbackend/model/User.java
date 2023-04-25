@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class User extends GenericEntity implements UserDetails {
     private String firstName;
     private String lastName;
-    @Column(name = "email", nullable = false, length = 200)
+    @Column(name = "email", nullable = false, unique = true, length = 200)
     private String email;
     private String password;
     private LocalDate birthDay;
