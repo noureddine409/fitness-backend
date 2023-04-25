@@ -17,6 +17,7 @@ public interface GenericService<T extends GenericEntity> {
     public T save(final T entity) throws ElementAlreadyExistException;
 
     List<T> search(String keyword, Pageable pageable) throws BusinessException;
+    public long countAll();
 
     public boolean delete(final Long id) throws ElementNotFoundException;
 

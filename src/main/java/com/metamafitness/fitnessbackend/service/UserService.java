@@ -2,13 +2,19 @@ package com.metamafitness.fitnessbackend.service;
 
 import com.metamafitness.fitnessbackend.dto.JwtToken;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.User;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface UserService extends GenericService<User> {
 
     User findByEmail(String email) throws ElementNotFoundException;
 
     User findByEmail_v2(String email);
+    List<User> searchByKeywordAndRole(String keyword, Pageable pageable, GenericEnum.RoleName roleName);
+    long countByRoles(GenericEnum.RoleName roleName);
 
 
     boolean sendVerificationEmail(User user);

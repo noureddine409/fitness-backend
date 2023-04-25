@@ -12,14 +12,12 @@ import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Transactional
@@ -226,5 +224,13 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public boolean checkPassword(User user, String password) {
         return passwordEncoder.matches(password, user.getPassword());
+    }
+    public List<User> searchByKeywordAndRole(String keyword, Pageable pageable, GenericEnum.RoleName roleName) {
+        return userRepository.searchByKeywordAndRole(keyword, pageable, roleName);
+    }
+
+    @Override
+    public long countByRoles(GenericEnum.RoleName roleName) {
+        return userRepository.countByRoles_Name(roleName);
     }
 }

@@ -44,7 +44,6 @@ public class   GenericEnum {
         PILATES,
         YOGA,
         SLIM_SCULPT
-
     }
 
     public enum ProgramEquipment {
