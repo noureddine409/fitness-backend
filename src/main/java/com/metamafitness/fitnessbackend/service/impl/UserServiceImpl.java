@@ -53,6 +53,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Value("${origin.url}")
     private String originUrl;
 
+    @Value("${user.default-profile-picture}")
+    private String defaultProfilePicture;
+
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -92,6 +95,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         final UserRole userRole = userRoleService.findByName(GenericEnum.RoleName.USER);
         entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         entity.setProfileCompleted(Boolean.FALSE);
+        entity.setProfilePicture(defaultProfilePicture);
         entity.addRole(userRole);
         return userRepository.save(entity);
     }
