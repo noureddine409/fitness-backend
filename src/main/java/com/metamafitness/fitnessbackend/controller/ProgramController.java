@@ -17,7 +17,6 @@ import com.metamafitness.fitnessbackend.validator.ValidPicture;
 import com.metamafitness.fitnessbackend.validator.ValidPreviewPictures;
 import com.metamafitness.fitnessbackend.validator.ValidVideoFiles;
 import com.metamafitness.fitnessbackend.validator.validation.ProgramFileValidator;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,17 +67,8 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         if (isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-        ModelMapper modelMapper = getModelMapper();
 
-        // Save the original skipNullEnabled value
-        boolean originalSkipNullEnabled = modelMapper.getConfiguration().isSkipNullEnabled();
-
-        // Set skipNullEnabled to true for this mapping operation
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(programDto, program);
-
-        // Set skipNullEnabled back to its original value
-        modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
+        mapWithSkipNull(programDto, program);
 
         Program updatedProgram = programService.patch(program);
 

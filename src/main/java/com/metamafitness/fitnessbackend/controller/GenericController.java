@@ -57,6 +57,18 @@ public abstract class GenericController<T extends GenericEntity, D extends Gener
         return (D) getModelMapper().map(entity, getClasses()[1]);
     }
 
+    public <S, D> void mapWithSkipNull(S sourceObject, D destinationObject) {
+        // Save the original skipNullEnabled value
+        boolean originalSkipNullEnabled = getModelMapper().getConfiguration().isSkipNullEnabled();
+
+        // Set skipNullEnabled to true for this mapping operation
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(sourceObject, destinationObject);
+
+        // Set skipNullEnabled back to its original value
+        modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
+    }
+
     public T convertToEntity(D dto) {
         return (T) getModelMapper().map(dto, getClasses()[0]);
     }

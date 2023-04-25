@@ -2,8 +2,7 @@ package com.metamafitness.fitnessbackend.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -19,4 +18,8 @@ public class ProgramReview extends GenericEntity {
 
     @ManyToOne
     private Program program;
+
+    @OneToOne(cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "created_by_id")
+    private User createdBy;
 }

@@ -10,7 +10,6 @@ import com.metamafitness.fitnessbackend.service.ProgramSectionService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.validator.ValidPicture;
 import com.metamafitness.fitnessbackend.validator.ValidVideo;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -55,17 +54,7 @@ public class SectionController extends GenericController<ProgramSection, Program
         }
 
         if(Objects.nonNull(sectionPatchDto)) {
-            ModelMapper modelMapper = getModelMapper();
-
-            // Save the original skipNullEnabled value
-            boolean originalSkipNullEnabled = modelMapper.getConfiguration().isSkipNullEnabled();
-            // Set skipNullEnabled to true for this mapping operation
-            modelMapper.getConfiguration().setSkipNullEnabled(true);
-
-            modelMapper.map(sectionPatchDto, programSectionFound);
-
-            // Set skipNullEnabled back to its original value
-            modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
+            mapWithSkipNull(sectionPatchDto, programSectionFound);
         }
 
         if (!video.isEmpty()) {

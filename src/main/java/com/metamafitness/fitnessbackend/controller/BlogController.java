@@ -7,12 +7,10 @@ import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
 import com.metamafitness.fitnessbackend.model.Blog;
 import com.metamafitness.fitnessbackend.model.User;
-import com.metamafitness.fitnessbackend.repository.BlogRepository;
 import com.metamafitness.fitnessbackend.service.BlogService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.UserService;
 import com.metamafitness.fitnessbackend.validator.ValidPicture;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,18 +55,7 @@ public class BlogController extends GenericController<Blog, BlogDto> {
         if (isNotOwner(blog)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-        ModelMapper modelMapper = getModelMapper();
-
-        // Save the original skipNullEnabled value
-        boolean originalSkipNullEnabled = modelMapper.getConfiguration().isSkipNullEnabled();
-
-        // Set skipNullEnabled to true for this mapping operation
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(blogDto, blog);
-
-        // Set skipNullEnabled back to its original value
-        modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
-
+        mapWithSkipNull(blogDto, blog);
         Blog updatedBlog = blogService.patch(blog);
 
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(updatedBlog));

@@ -45,17 +45,7 @@ public class UserController extends GenericController<User, UserDto> {
     @PatchMapping
     public ResponseEntity<UserDto> update(@RequestBody @Valid UserPatchDto userDto) {
         User currentUser = getCurrentUser();
-        ModelMapper modelMapper = getModelMapper();
-
-        // Save the original skipNullEnabled value
-        boolean originalSkipNullEnabled = modelMapper.getConfiguration().isSkipNullEnabled();
-
-        // Set skipNullEnabled to true for this mapping operation
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(userDto, currentUser);
-
-        // Set skipNullEnabled back to its original value
-        modelMapper.getConfiguration().setSkipNullEnabled(originalSkipNullEnabled);
+        mapWithSkipNull(userDto, currentUser);
         currentUser.setProfileCompleted(Boolean.TRUE);
         User updated = userService.update(currentUser.getId(), currentUser);
 

@@ -7,19 +7,12 @@ import javax.validation.constraints.Min;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class ProgramReviewDto extends GenericDto{
-
+public class ReviewPatchDto {
     @Max(5) @Min(1)
     private int rating;
 
     private String review;
-
-    private ProgramDto program;
-
-    private UserDto createdBy;
-
-
 }
