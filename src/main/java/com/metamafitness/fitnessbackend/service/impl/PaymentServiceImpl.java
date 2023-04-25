@@ -1,9 +1,12 @@
 package com.metamafitness.fitnessbackend.service.impl;
 
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.TRANSACTION_ALREADY_COMPLETED;
+
+import com.metamafitness.fitnessbackend.exception.CurrencyConversionException;
 import com.metamafitness.fitnessbackend.exception.TransactionAlreadyCompletedException;
 import com.metamafitness.fitnessbackend.model.*;
 import com.metamafitness.fitnessbackend.repository.ProgramEnrollmentRepository;
+import com.metamafitness.fitnessbackend.service.CurrencyConversionService;
 import com.metamafitness.fitnessbackend.service.PaymentService;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.paypal.core.PayPalHttpClient;
@@ -21,9 +24,17 @@ import java.util.List;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    @Value("${paypal.currency.code}")
+    private String paypalCurrencyCode;
+
+    @Value("${app.currency.code}")
+    private String appCurrencyCode;
+
     private final PayPalHttpClient payPalHttpClient;
 
     private final ProgramService programService;
+
+    private final CurrencyConversionService currencyConversionService;
 
     @Value("${paypal.order.return-url}")
     private String returnUrl;
@@ -32,14 +43,17 @@ public class PaymentServiceImpl implements PaymentService {
     private final ProgramEnrollmentRepository programEnrollmentRepository;
 
     public PaymentServiceImpl(PayPalHttpClient payPalHttpClient, ProgramService programService,
-                              ProgramEnrollmentRepository programEnrollmentRepository) {
+                              CurrencyConversionService currencyConversionService, ProgramEnrollmentRepository programEnrollmentRepository) {
         this.payPalHttpClient = payPalHttpClient;
         this.programService = programService;
+        this.currencyConversionService = currencyConversionService;
         this.programEnrollmentRepository = programEnrollmentRepository;
     }
 
     @Override
-    public Order createOrder(Program program) throws IOException {
+    public Order createOrder(Program program) throws IOException, CurrencyConversionException {
+        final BigDecimal priceInPaypalCurrency = currencyConversionService.convert(appCurrencyCode,
+                paypalCurrencyCode, program.getPrice());
         OrdersCreateRequest request = new OrdersCreateRequest();
         request.prefer("return=representation");
 
@@ -58,8 +72,8 @@ public class PaymentServiceImpl implements PaymentService {
         List<PurchaseUnitRequest> purchaseUnits = new ArrayList<>();
         PurchaseUnitRequest purchaseUnit = new PurchaseUnitRequest()
                 .amountWithBreakdown(new AmountWithBreakdown()
-                        .currencyCode("USD")
-                        .value(program.getPrice().toString()))
+                        .currencyCode(paypalCurrencyCode)
+                        .value(priceInPaypalCurrency.toString()))
                 .referenceId(program.getId().toString());
 
         purchaseUnits.add(purchaseUnit);

@@ -62,6 +62,12 @@ public class GenericGlobalExceptionHandler extends ResponseEntityExceptionHandle
         return getResponseEntity(UNAUTHORIZED, e);
     }
 
+    @ExceptionHandler(value = CurrencyConversionException.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleException(final CurrencyConversionException e) {
+        return getResponseEntity(INTERNAL_SERVER_ERROR, e);
+    }
+
     @ExceptionHandler(value = BadRequestException.class)
     @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleException(final BadRequestException e) {

@@ -16,6 +16,8 @@ public class CoreConstant {
 
         public static final String INVALID_PASSWORD = "message.exception.invalid-password";
 
+        public static final String CURRENCY_CONVERSION_EXCEPTION = "message.exception.currency-conversion-exception";
+
         public static final String JOIN_REQUEST_ALREADY_HANDLED = "message.exception.join_request_already_handled";
 
         public static final String USER_ROLE_ALREADY_CREATED = "message.exception.info.UserRoleCreated";
