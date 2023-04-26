@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 public class SectionCommentDto extends GenericDto{
     private String comment;
-    private ProgramSectionDto section;
 
     private UserDto createdBy;
 
