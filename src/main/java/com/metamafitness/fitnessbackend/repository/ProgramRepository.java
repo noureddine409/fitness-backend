@@ -1,12 +1,35 @@
 package com.metamafitness.fitnessbackend.repository;
 
+import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Program;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ProgramRepository extends GenericRepository<Program>{
+
+    default List<Program> findByCategoryAndState(String category, GenericEnum.ProgramState state, String keyword, Pageable pageable) {
+        Specification<Program> spec = Specification.where(hasKeyword(keyword))
+                .and((root, query, cb) -> {
+                    List<Predicate> predicates = new ArrayList<>();
+                    if (!category.isEmpty()) {
+                        GenericEnum.ProgramCategory categoryEnum = GenericEnum.ProgramCategory.valueOf(category.toUpperCase());
+                        predicates.add(cb.equal(root.get("category"), categoryEnum));
+                    }
+                    predicates.add(cb.equal(root.get("state"), state));
+                    return cb.and(predicates.toArray(new Predicate[0]));
+                });
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(CoreConstant.Pagination.DEFAULT_SORT_PROPERTY).descending());
+        }
+        return findAll(spec, pageable).getContent();
+    }
     List<Program> findByCreatedBy_id(Long id, Pageable pageable);
 
     long countByCreatedBy_id(Long id);

@@ -1,11 +1,18 @@
 package com.metamafitness.fitnessbackend.service;
 
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Program;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ProgramService extends GenericService<Program> {
+
+
+    List<Program> searchWithCategory(String keyword, Pageable pageable,
+                         GenericEnum.ProgramState state,
+                         String category) throws BusinessException;
 
     List<Program> findByCreator(Long id, int page, int size);
 

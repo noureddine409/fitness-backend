@@ -1,5 +1,7 @@
 package com.metamafitness.fitnessbackend.service.impl;
 
+import com.metamafitness.fitnessbackend.common.CoreConstant;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.Program;
@@ -23,6 +25,16 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
         super(genericRepository, modelMapper);
         this.programRepository = programRepository;
 
+    }
+
+    @Override
+    public List<Program> searchWithCategory(String keyword, Pageable pageable, GenericEnum.ProgramState state, String category) throws BusinessException {
+        try {
+            return programRepository.findByCategoryAndState(category,state, keyword, pageable);
+        } catch (BusinessException e) {
+            throw new BusinessException(null, e, CoreConstant.Exception.FIND_ELEMENTS, null);
+
+        }
     }
 
     @Override
