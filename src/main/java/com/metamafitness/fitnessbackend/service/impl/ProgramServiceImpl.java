@@ -28,6 +28,17 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
     }
 
     @Override
+    public List<Program> findByEnrollment(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return programRepository.findByEnrollments_user_id(userId, pageable);
+    }
+
+    @Override
+    public long countByEnrollment(Long userId) {
+        return programRepository.countByEnrollments_user_id(userId);
+    }
+
+    @Override
     public List<Program> searchWithCategory(String keyword, Pageable pageable, GenericEnum.ProgramState state, String category) throws BusinessException {
         try {
             return programRepository.findByCategoryAndState(category,state, keyword, pageable);

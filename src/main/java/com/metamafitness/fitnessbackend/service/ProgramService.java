@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface ProgramService extends GenericService<Program> {
 
+    List<Program> findByEnrollment(Long userId, int page, int size);
+
+    long countByEnrollment(Long userId);
 
     List<Program> searchWithCategory(String keyword, Pageable pageable,
                          GenericEnum.ProgramState state,
