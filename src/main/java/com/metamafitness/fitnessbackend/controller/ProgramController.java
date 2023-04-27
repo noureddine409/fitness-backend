@@ -79,10 +79,10 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
 
     @PostMapping("/search/category={category}")
-    public ResponseEntity<List<ProgramDto>> searchWithCategory(@PathVariable String category, @RequestBody SearchDto searchDto) throws BusinessException {
+    public ResponseEntity<List<ProgramDto>> searchWithCategory(@PathVariable String category,@RequestParam(value = "state") String state, @RequestBody SearchDto searchDto) throws BusinessException {
         searchDto.validate();
         Pageable pageable = PageRequest.of(searchDto.getPage(), searchDto.getSize());
-        List<Program> entities = programService.searchWithCategory(searchDto.getKeyword(), pageable, ProgramState.SUBMITTED, category);
+        List<Program> entities = programService.searchWithCategory(searchDto.getKeyword(), pageable, state, category);
 
         List<ProgramDto> dto = entities.stream()
                 .map(this::convertToDto)
@@ -190,7 +190,16 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
 
         program.setState(ProgramState.APPROVED);
 
-        Program submittedProgram = programService.update(id, program);
+        Program submittedProgram = programService.patch(program);
+
+        return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
+    }
+    @PatchMapping("/{id}/archive")
+    public ResponseEntity<ProgramDto> archive(@PathVariable("id") Long id) {
+        final Program program = programService.findById(id);
+
+        program.setState(ProgramState.ARCHIVED);
+        Program submittedProgram = programService.patch(program);
 
         return ResponseEntity.status(HttpStatus.OK).body(convertToDto(submittedProgram));
     }

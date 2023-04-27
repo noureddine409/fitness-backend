@@ -28,7 +28,7 @@ public class ProgramServiceImpl extends GenericServiceImpl<Program> implements P
     }
 
     @Override
-    public List<Program> searchWithCategory(String keyword, Pageable pageable, GenericEnum.ProgramState state, String category) throws BusinessException {
+    public List<Program> searchWithCategory(String keyword, Pageable pageable, String state, String category) throws BusinessException {
         try {
             return programRepository.findByCategoryAndState(category,state, keyword, pageable);
         } catch (BusinessException e) {

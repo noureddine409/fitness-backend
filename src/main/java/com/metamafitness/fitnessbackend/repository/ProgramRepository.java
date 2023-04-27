@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface ProgramRepository extends GenericRepository<Program>{
 
-    default List<Program> findByCategoryAndState(String category, GenericEnum.ProgramState state, String keyword, Pageable pageable) {
+    default List<Program> findByCategoryAndState(String category, String state, String keyword, Pageable pageable) {
         Specification<Program> spec = Specification.where(hasKeyword(keyword))
                 .and((root, query, cb) -> {
                     List<Predicate> predicates = new ArrayList<>();
@@ -22,7 +22,10 @@ public interface ProgramRepository extends GenericRepository<Program>{
                         GenericEnum.ProgramCategory categoryEnum = GenericEnum.ProgramCategory.valueOf(category.toUpperCase());
                         predicates.add(cb.equal(root.get("category"), categoryEnum));
                     }
-                    predicates.add(cb.equal(root.get("state"), state));
+                    if(!state.isEmpty()){
+                        GenericEnum.ProgramState stateEnum = GenericEnum.ProgramState.valueOf(state.toUpperCase());
+                        predicates.add(cb.equal(root.get("state"), stateEnum));
+                    }
                     return cb.and(predicates.toArray(new Predicate[0]));
                 });
         if (pageable.getSort().isUnsorted()) {
