@@ -8,7 +8,10 @@ import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
-import com.metamafitness.fitnessbackend.model.*;
+import com.metamafitness.fitnessbackend.model.Program;
+import com.metamafitness.fitnessbackend.model.ProgramSection;
+import com.metamafitness.fitnessbackend.model.SectionVideo;
+import com.metamafitness.fitnessbackend.model.User;
 import com.metamafitness.fitnessbackend.service.ProgramService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.UserService;
@@ -46,6 +49,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
     private final ProgramService programService;
 
     private final UserService userService;
+
     @Override
     public Program convertToEntity(ProgramDto dto) {
         final User currentUser = getCurrentUser();
@@ -61,6 +65,24 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         this.userService = userService;
 
     }
+
+    @GetMapping("/enrollments")
+    public ResponseEntity<List<ProgramDto>> getUserPrograms(@RequestParam(value = "page", defaultValue = "" + DEFAULT_PAGE_NUMBER) Integer page,
+                                                            @RequestParam(value = "size", defaultValue = "" + DEFAULT_PAGE_SIZE) Integer size) throws BusinessException {
+        final Long currentUserID = getCurrentUserId();
+        List<Program> programs = programService.findByEnrollment(currentUserID, page, size);
+        List<ProgramDto> dto = programs.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        long totalElements = programService.countByEnrollment(currentUserID);
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
+    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProgramDto> update(@PathVariable("id") Long id, @RequestBody ProgramPatchDto programDto) {
@@ -115,24 +137,6 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
 
     }
-//    @GetMapping("/category")
-//    public ResponseEntity<List<ProgramDto>> findProgramsByCategory(@RequestParam(value = "category") GenericEnum.ProgramCategory category,
-//                                                                   @RequestParam(value = "page", defaultValue = "" + DEFAULT_PAGE_NUMBER) Integer page,
-//                                                                   @RequestParam(value = "size", defaultValue = "" + DEFAULT_PAGE_SIZE) Integer size) {
-//        List<Program> programs = programService.findByCategory(category, page, size);
-//
-//        List<ProgramDto> dto = programs.stream().map(this::convertToDto).collect(Collectors.toList());
-//
-//        long totalPrograms = programService.countByCategory(category);
-//        int totalPages = (int) Math.ceil((double) totalPrograms / size);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("X-Total-Pages", String.valueOf(totalPages));
-//        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
-//
-//        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
-//
-//    }
 
     @GetMapping("/trainers/{trainerId}")
     public ResponseEntity<List<ProgramDto>> findTrainerPrograms(@PathVariable("trainerId") Long id,
@@ -158,7 +162,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         if (isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-        if(ProgramState.SUBMITTED.equals(program.getState()) || ProgramState.APPROVED.equals(program.getState())) {
+        if (ProgramState.SUBMITTED.equals(program.getState()) || ProgramState.APPROVED.equals(program.getState())) {
             throw new UnauthorizedException(new UnauthorizedException(), AUTHORIZATION_PROGRAM_SUBMISSION_NOT_ALLOWED, null);
         }
         program.setState(ProgramState.SUBMITTED);
@@ -174,7 +178,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         if (isNotOwner(program)) {
             throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
         }
-        if(!ProgramState.SUBMITTED.equals(program.getState())) {
+        if (!ProgramState.SUBMITTED.equals(program.getState())) {
             throw new UnauthorizedException(new UnauthorizedException(), AUTHORIZATION_PROGRAM_CANCEL_NOT_ALLOWED, null);
         }
         program.setState(ProgramState.IN_PROGRESS);
