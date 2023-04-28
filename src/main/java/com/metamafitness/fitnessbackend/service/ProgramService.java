@@ -14,7 +14,7 @@ public interface ProgramService extends GenericService<Program> {
     long countByEnrollment(Long userId);
 
     List<Program> searchWithCategory(String keyword, Pageable pageable,
-                         GenericEnum.ProgramState state,
+                         String state,
                          String category) throws BusinessException;
 
     List<Program> findByCreator(Long id, int page, int size);
