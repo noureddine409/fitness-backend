@@ -1,6 +1,9 @@
 package com.metamafitness.fitnessbackend.service.impl;
 
+import com.metamafitness.fitnessbackend.common.CoreConstant;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.model.Blog;
+import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.repository.BlogRepository;
 import com.metamafitness.fitnessbackend.repository.GenericRepository;
 import com.metamafitness.fitnessbackend.service.BlogService;
@@ -29,5 +32,15 @@ public class BlogServiceImpl extends GenericServiceImpl<Blog> implements BlogSer
     @Override
     public long countByCreator(Long currentUserId) {
         return blogRepository.countByCreatedBy_id(currentUserId);
+    }
+
+    @Override
+    public List<Blog> searchWithState(String keyword, GenericEnum.BlogState state, Pageable pageable) {
+        try {
+            return blogRepository.searchByState(state, keyword, pageable);
+        } catch (BusinessException e) {
+            throw new BusinessException(null, e, CoreConstant.Exception.FIND_ELEMENTS, null);
+
+        }
     }
 }

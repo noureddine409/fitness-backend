@@ -2,6 +2,8 @@ package com.metamafitness.fitnessbackend.controller;
 
 import com.metamafitness.fitnessbackend.dto.BlogDto;
 import com.metamafitness.fitnessbackend.dto.BlogPatchDto;
+import com.metamafitness.fitnessbackend.dto.SearchDto;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ResourceDeletionNotAllowedException;
 import com.metamafitness.fitnessbackend.exception.ResourceOwnershipException;
 import com.metamafitness.fitnessbackend.exception.UnauthorizedException;
@@ -11,6 +13,8 @@ import com.metamafitness.fitnessbackend.service.BlogService;
 import com.metamafitness.fitnessbackend.service.StorageService;
 import com.metamafitness.fitnessbackend.service.UserService;
 import com.metamafitness.fitnessbackend.validator.ValidPicture;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +51,23 @@ public class BlogController extends GenericController<Blog, BlogDto> {
         final Blog entity = super.convertToEntity(dto);
         entity.setCreatedBy(currentUser);
         return entity;
+    }
+
+    @Override
+    public ResponseEntity<List<BlogDto>> search(SearchDto searchDto) throws BusinessException {
+        searchDto.validate();
+        Pageable pageable = PageRequest.of(searchDto.getPage(), searchDto.getSize());
+        List<Blog> entities = blogService.searchWithState(searchDto.getKeyword(), BlogState.SUBMITTED, pageable);
+        List<BlogDto> dto = entities.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        long totalElements = blogService.countAll();
+        int totalPages = (int) Math.ceil((double) totalElements / searchDto.getSize());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Pages", String.valueOf(totalPages));
+        headers.add("Access-Control-Expose-Headers", "X-Total-Pages");
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(dto);
     }
 
     @PatchMapping("/{id}")
