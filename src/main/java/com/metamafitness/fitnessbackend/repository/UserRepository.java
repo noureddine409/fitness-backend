@@ -13,6 +13,10 @@ import java.util.Optional;
 import static com.metamafitness.fitnessbackend.model.GenericEnum.RoleName;
 
 public interface UserRepository extends GenericRepository<User>{
+
+    List<User> findDistinctByEnrollments_program_createdBy_id(Long trainer_Id, Pageable pageable);
+
+    Long countDistinctByEnrollments_program_createdBy_id(Long trainer_Id);
     Optional<User> findByEmail(String email);
 
     Optional<User> findByVerificationCode(String verificationCode);

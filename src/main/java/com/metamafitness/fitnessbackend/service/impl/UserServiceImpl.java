@@ -2,6 +2,7 @@ package com.metamafitness.fitnessbackend.service.impl;
 
 import com.metamafitness.fitnessbackend.common.CoreConstant;
 import com.metamafitness.fitnessbackend.dto.JwtToken;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementAlreadyExistException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.*;
@@ -12,6 +13,7 @@ import com.metamafitness.fitnessbackend.utils.JwtProvider;
 import net.bytebuddy.utility.RandomString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -98,6 +100,22 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         entity.setProfilePicture(defaultProfilePicture);
         entity.addRole(userRole);
         return userRepository.save(entity);
+    }
+
+    @Override
+    public List<User> findNewEnrolledUsers(Long trainerId, int page, int size) throws BusinessException {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return userRepository.findDistinctByEnrollments_program_createdBy_id(trainerId, pageable);
+        } catch (BusinessException e) {
+            throw new BusinessException(null, e, CoreConstant.Exception.FIND_ELEMENTS, null);
+
+        }
+    }
+
+    @Override
+    public Long countNewEnrolledUsers(Long trainerId) {
+        return userRepository.countDistinctByEnrollments_program_createdBy_id(trainerId);
     }
 
     @Override

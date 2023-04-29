@@ -1,6 +1,7 @@
 package com.metamafitness.fitnessbackend.service;
 
 import com.metamafitness.fitnessbackend.dto.JwtToken;
+import com.metamafitness.fitnessbackend.exception.BusinessException;
 import com.metamafitness.fitnessbackend.exception.ElementNotFoundException;
 import com.metamafitness.fitnessbackend.model.GenericEnum;
 import com.metamafitness.fitnessbackend.model.User;
@@ -9,6 +10,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface UserService extends GenericService<User> {
+
+    List<User> findNewEnrolledUsers(Long trainerId, int page, int size) throws BusinessException;
+
+    Long countNewEnrolledUsers(Long trainerId);
 
     User findByEmail(String email) throws ElementNotFoundException;
 
