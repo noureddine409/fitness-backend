@@ -14,10 +14,4 @@ public class PaymentUserDto {
     private String lastName;
     private String email;
     private String payerId;
-    private String shippingAddressLine1;
-    private String shippingAddressLine2;
-    private String shippingCity;
-    private String shippingState;
-    private String shippingCountryCode;
-    private String shippingPostalCode;
 }
