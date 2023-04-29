@@ -94,7 +94,7 @@ public class EnrollmentController extends GenericController<ProgramEnrollment, P
     @PostMapping("create-order/{programId}")
     ResponseEntity<OrderDto> createEnrollmentOrder(@PathVariable("programId") Long programId) throws IOException, ElementAlreadyExistException, UserAlreadyEnrolled {
         final Program program = programService.findById(programId);
-        if (!GenericEnum.ProgramState.SUBMITTED.equals(program.getState())) { // in normal case we use APPROVED instead of SUBMITTED
+        if (!GenericEnum.ProgramState.APPROVED.equals(program.getState())) {
             throw new UnauthorizedPurchaseException(new UnauthorizedPurchaseException(), UNAUTHORIZED_PROGRAM_PURCHASE, null);
         }
         final Long currentUserId = getCurrentUserId();
