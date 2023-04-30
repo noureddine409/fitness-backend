@@ -227,7 +227,7 @@ public class ProgramController extends GenericController<Program, ProgramDto> {
         return !currentUserId.equals(resourceOwnerId);
     }
 
-    @PostMapping
+    @PostMapping("/create-program")
     public ResponseEntity<ProgramDto> save(@RequestPart(value = "program") @Valid ProgramDto programDto, @Valid @ValidVideoFiles @RequestPart(value = "section-videos") List<MultipartFile> videos, @Valid @ValidPreviewPictures @RequestPart(value = "section-pictures") List<MultipartFile> previewPictures, @Valid @ValidPicture @RequestPart(value = "program-picture") MultipartFile picture) {
 
         programFileValidator.validate(programDto, videos, previewPictures);

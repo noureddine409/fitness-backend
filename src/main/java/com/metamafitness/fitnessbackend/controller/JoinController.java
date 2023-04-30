@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/join-us")
+@RequestMapping("/api/joins")
 @AllArgsConstructor
 public class JoinController extends GenericController<Join, JoinDto> {
 
@@ -34,7 +34,7 @@ public class JoinController extends GenericController<Join, JoinDto> {
     private final StorageService storageService;
 
 
-    @PostMapping
+    @PostMapping("/join-us")
     public ResponseEntity<JoinDto> requestJoinAsTrainer(@RequestPart(value = "join") @Valid JoinDto joinDto,@Valid @ValidPreviewPictures @RequestPart(value = "documents") List<MultipartFile> documents) {
         final User user = getCurrentUser();
         Join join = convertToEntity(joinDto);
@@ -45,7 +45,7 @@ public class JoinController extends GenericController<Join, JoinDto> {
         return new ResponseEntity<>(convertToDto(joinService.save(join)), HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping("/requests")
     public ResponseEntity<List<JoinDto>> findAll(@RequestParam(name = "page", required = false) Integer page,
                                                  @RequestParam(name = "size", required = false) Integer size) {
         if(page == null) page = CoreConstant.Pagination.DEFAULT_PAGE_NUMBER;

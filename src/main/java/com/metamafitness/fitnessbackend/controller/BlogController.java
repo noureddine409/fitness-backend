@@ -168,7 +168,7 @@ public class BlogController extends GenericController<Blog, BlogDto> {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(blogService.delete(id));
     }
 
-    @PostMapping
+    @PostMapping("/create-blog")
     public ResponseEntity<BlogDto> save(@RequestPart(value = "blog") @Valid BlogDto blogDto, @Valid @ValidPicture @RequestPart(value = "blog-picture") MultipartFile picture) {
 
         Blog blogEntity = convertToEntity(blogDto);
