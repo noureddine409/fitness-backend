@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,5 +43,10 @@ public class ProgramEnrollmentServiceImpl extends GenericServiceImpl<ProgramEnro
     @Override
     public long countByProgramCreator(Long trainerId) {
         return programEnrollmentRepository.countByProgram_CreatedBy_id(trainerId);
+    }
+
+    @Override
+    public BigDecimal getTotalProfitByTrainer(Long trainerId) {
+        return programEnrollmentRepository.sumPayment_PaymentAmountByProgramCreatedBy_Id(trainerId);
     }
 }
