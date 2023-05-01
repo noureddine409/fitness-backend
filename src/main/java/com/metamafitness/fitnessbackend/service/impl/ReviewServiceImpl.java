@@ -20,4 +20,8 @@ public class ReviewServiceImpl extends GenericServiceImpl<ProgramReview> impleme
     public Boolean findByUserAndProgram(Long userId, Long ProgramId) {
         return reviewRepository.existsByCreatedBy_idAndProgram_id(userId, ProgramId);
     }
+    @Override
+    public ProgramReview findByUserAndProgramId(Long userId, Long ProgramId) {
+        return reviewRepository.findByCreatedBy_idAndProgram_id(userId, ProgramId);
+    }
 }

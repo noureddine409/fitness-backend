@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.metamafitness.fitnessbackend.common.CoreConstant.Exception.ALREADY_EXISTS;
@@ -42,9 +43,11 @@ public class ReviewController extends GenericController<ProgramReview, ProgramRe
     public ResponseEntity<ProgramReviewDto> addReview(@PathVariable Long programId, @RequestBody ProgramReviewDto reviewDto) {
         Program program = programService.findById(programId);
         User currentUser = getCurrentUser();
+        ProgramReview programReviewFound = reviewService.findByUserAndProgramId(currentUser.getId(),program.getId());
 
-        if(reviewService.findByUserAndProgram(currentUser.getId(), program.getId())) {
-            throw new ElementAlreadyExistException(new ElementAlreadyExistException(), ALREADY_EXISTS, null);
+        if(Objects.nonNull(programReviewFound)) {
+            return update(programReviewFound.getId(), new ReviewPatchDto(reviewDto.getRating(), reviewDto.getReview()));
+            //throw new ElementAlreadyExistException(new ElementAlreadyExistException(), ALREADY_EXISTS, null);
         }
         ProgramReview programReview = convertToEntity(reviewDto);
         programReview.setProgram(program);
