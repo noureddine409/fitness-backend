@@ -73,9 +73,6 @@ public class ReviewController extends GenericController<ProgramReview, ProgramRe
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<Boolean> delete(@PathVariable Long reviewId) {
         ProgramReview review = reviewService.findById(reviewId);
-        if(isNotOwner(review)) {
-            throw new ResourceOwnershipException(new ResourceOwnershipException(), AUTHORIZATION_RESOURCE_OWNERSHIP, null);
-        }
         Boolean deleted = reviewService.delete(reviewId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(deleted);
     }
