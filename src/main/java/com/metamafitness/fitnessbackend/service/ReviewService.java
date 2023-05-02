@@ -6,4 +6,6 @@ public interface ReviewService extends GenericService<ProgramReview> {
 
     Boolean findByUserAndProgram(Long userId, Long ProgramId);
     ProgramReview findByUserAndProgramId(Long userId, Long ProgramId);
+
+    Long countByTrainer(Long currentUserId);
 }

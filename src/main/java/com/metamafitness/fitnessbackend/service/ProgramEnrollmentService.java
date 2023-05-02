@@ -17,4 +17,6 @@ public interface ProgramEnrollmentService extends GenericService<ProgramEnrollme
     long countByProgramCreator(Long currentUserId);
 
     BigDecimal getTotalProfitByTrainer(Long trainerId);
+
+    BigDecimal getTotalProfit();
 }

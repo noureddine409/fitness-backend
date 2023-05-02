@@ -19,5 +19,6 @@ public interface ProgramEnrollmentRepository extends GenericRepository<ProgramEn
 
     @Query("SELECT COALESCE(SUM(pe.payment.paymentAmount), 0) FROM ProgramEnrollment pe WHERE pe.program.createdBy.id = :id")
     BigDecimal sumPayment_PaymentAmountByProgramCreatedBy_Id(Long id);
-
+    @Query("SELECT SUM(pe.payment.paymentAmount) FROM ProgramEnrollment pe")
+    BigDecimal sumPayment_PaymentAmount();
 }

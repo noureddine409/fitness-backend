@@ -24,4 +24,9 @@ public class ReviewServiceImpl extends GenericServiceImpl<ProgramReview> impleme
     public ProgramReview findByUserAndProgramId(Long userId, Long ProgramId) {
         return reviewRepository.findByCreatedBy_idAndProgram_id(userId, ProgramId);
     }
+
+    @Override
+    public Long countByTrainer(Long currentUserId) {
+        return reviewRepository.countByProgram_CreatedBy_Id(currentUserId);
+    }
 }

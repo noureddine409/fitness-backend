@@ -8,4 +8,5 @@ public interface ReviewRepository extends GenericRepository<ProgramReview>{
     ProgramReview findByCreatedBy_idAndProgram_id(Long userId, Long programId);
 
 
+    Long countByProgram_CreatedBy_Id(Long currentUserId);
 }

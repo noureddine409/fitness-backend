@@ -49,4 +49,9 @@ public class ProgramEnrollmentServiceImpl extends GenericServiceImpl<ProgramEnro
     public BigDecimal getTotalProfitByTrainer(Long trainerId) {
         return programEnrollmentRepository.sumPayment_PaymentAmountByProgramCreatedBy_Id(trainerId);
     }
+
+    @Override
+    public BigDecimal getTotalProfit() {
+        return programEnrollmentRepository.sumPayment_PaymentAmount();
+    }
 }
