@@ -8,6 +8,7 @@ variables:
   POSTGRES_HOST_AUTH_METHOD: trust
   DATABASE_HOST: postgresql  # PostgreSQL service alias
   DATABASE_PORT: 5432
+  MAVEN_CLI_OPTS: "--batch-mode"
 
 
 
@@ -16,6 +17,17 @@ cache:
     - .m2/repository
 
 image: maven:3.8.6-openjdk-18
+
+
+clean-and-test:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS -B verify --file pom.xml
+  artifacts:
+    paths:
+      - target/
+  
+
 
 compile:
   stage: build
@@ -29,6 +41,3 @@ install:
       alias: postgresql
   script:
     - mvn $MAVEN_CLI_OPTS install
-  artifacts:
-    paths:
-      - target/
