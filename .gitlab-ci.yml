@@ -1,7 +1,6 @@
 stages:
   - build
-  - sonarqube
-  - analysis
+  - sonarqube-check
 
 services:
   - name: postgres:latest
@@ -45,21 +44,22 @@ install:
 
 
 
-sonarqube:
-  stage: sonarqube
-  image: docker:latest
-  script:
-    - docker run -d --name sonarqube-container -p 9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:latest
+sonarqube-check:
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
+    - sonar-scanner
+  allow_failure: true
   only:
-    - main
-    - develop
-
-analyze:
-  stage: analysis
-  image: maven:latest
-  script:
-    - mvn clean install sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -Dsonar.projectKey=my-project-key -Dsonar.sources=.
-  only:
+    - merge_requests
     - main
     - develop
 
