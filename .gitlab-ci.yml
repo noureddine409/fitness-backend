@@ -44,7 +44,8 @@ install:
 
 
 
-sonarqube-check:
+sonarqube:
+  stage: sonarqube-check
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
