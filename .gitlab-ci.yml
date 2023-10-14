@@ -32,7 +32,7 @@ clean-and-test:
 compile:
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS compile
+    - mvn $MAVEN_CLI_OPTS -s settings.xml compile
 
 install:
   stage: build
