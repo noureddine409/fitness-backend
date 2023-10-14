@@ -1,0 +1,24 @@
+stages:
+  - build
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode"
+
+cache:
+  paths:
+    - .m2/repository
+
+image: maven:3.8.6-openjdk-18
+
+compile:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS compile
+
+install:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS install
+  artifacts:
+    paths:
+      - target/
