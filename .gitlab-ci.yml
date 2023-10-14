@@ -1,6 +1,10 @@
 stages:
   - build
 
+services:
+  - name: postgres:latest
+    alias: postgresql
+
 variables:
   POSTGRES_DB: fitness
   POSTGRES_USER: postgres
@@ -36,8 +40,5 @@ compile:
 
 install:
   stage: build
-  services:
-    - name: postgres:latest
-      alias: postgresql
   script:
     - mvn $MAVEN_CLI_OPTS install
