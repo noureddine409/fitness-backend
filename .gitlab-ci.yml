@@ -51,7 +51,8 @@ sonarqube:
   script:
     - docker run -d --name sonarqube-container -p 9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:latest
   only:
-    - master
+    - main
+    - develop
 
 analyze:
   stage: analysis
