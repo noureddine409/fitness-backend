@@ -3,6 +3,12 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode"
+  POSTGRES_DB: your-database-name
+  POSTGRES_USER: your-db-username
+  POSTGRES_PASSWORD: your-db-password
+  POSTGRES_HOST_AUTH_METHOD: trust
+  DATABASE_HOST: postgresql
+  DATABASE_PORT: 5432
 
 cache:
   paths:
@@ -17,6 +23,9 @@ compile:
 
 install:
   stage: build
+  services:
+    - name: postgres:latest
+      alias: postgresql
   script:
     - mvn $MAVEN_CLI_OPTS install
   artifacts:
