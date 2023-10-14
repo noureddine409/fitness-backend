@@ -2,13 +2,13 @@ stages:
   - build
 
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode"
-  POSTGRES_DB: your-database-name
-  POSTGRES_USER: your-db-username
-  POSTGRES_PASSWORD: your-db-password
+  POSTGRES_DB: fitness
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: maroc123
   POSTGRES_HOST_AUTH_METHOD: trust
-  DATABASE_HOST: postgresql
+  DATABASE_HOST: postgresql  # PostgreSQL service alias
   DATABASE_PORT: 5432
+
 
 cache:
   paths:
