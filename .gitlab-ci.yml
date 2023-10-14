@@ -1,20 +1,13 @@
 stages:
   - build
 
-services:
-  - name: postgres:latest
-    alias: postgresql
-
 variables:
   POSTGRES_DB: fitness
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: maroc123
   POSTGRES_HOST_AUTH_METHOD: trust
-  DATABASE_HOST: postgresql  # PostgreSQL service alias
+  DATABASE_HOST: postgresql
   DATABASE_PORT: 5432
-  MAVEN_CLI_OPTS: "--batch-mode"
-
-
 
 cache:
   paths:
@@ -22,23 +15,10 @@ cache:
 
 image: maven:3.8.6-openjdk-18
 
-
-clean-and-test:
+build:
   stage: build
   script:
-    - mvn $MAVEN_CLI_OPTS -B verify --file pom.xml
+    - mvn clean compile test package verify --batch-mode
   artifacts:
     paths:
       - target/
-  
-
-
-compile:
-  stage: build
-  script:
-    - mvn $MAVEN_CLI_OPTS -s settings.xml compile
-
-install:
-  stage: build
-  script:
-    - mvn $MAVEN_CLI_OPTS install
