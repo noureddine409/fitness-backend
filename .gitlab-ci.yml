@@ -10,6 +10,7 @@ variables:
   DATABASE_PORT: 5432
 
 
+
 cache:
   paths:
     - .m2/repository
