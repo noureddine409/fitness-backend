@@ -1,5 +1,6 @@
 stages:
   - build
+  - code-analysis
 
 services:
   - name: postgres:latest
@@ -30,8 +31,6 @@ clean-and-test:
   artifacts:
     paths:
       - target/
-  
-
 
 compile:
   stage: build
@@ -42,3 +41,8 @@ install:
   stage: build
   script:
     - mvn $MAVEN_CLI_OPTS install
+
+sonarQube:
+  stage: code-analysis
+  script:
+    - mvn $MAVEN_CLI_OPTS sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}
