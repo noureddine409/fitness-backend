@@ -1,6 +1,7 @@
 stages:
   - build
-  - code-analysis
+  - sonarqube
+  - analysis
 
 services:
   - name: postgres:latest
@@ -45,7 +46,7 @@ install:
 
 
 sonarqube:
-  stage: code-analysis
+  stage: sonarqube
   image: sonarqube:latest
   script:
     - docker run -d --name sonarqube-container -p 9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:latest
@@ -53,11 +54,12 @@ sonarqube:
     - master
 
 analyze:
-  stage: code-analysis
+  stage: analysis
   image: maven:latest
   script:
     - mvn clean install sonar:sonar -Dsonar.host.url=http://sonarqube:9000 -Dsonar.projectKey=my-project-key -Dsonar.sources=.
   only:
     - main
+    - develop
 
 
