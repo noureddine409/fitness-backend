@@ -43,11 +43,5 @@ install:
   script:
     - mvn $MAVEN_CLI_OPTS install
 
-sonarqube:
-  stage: analyze
-  image: sonarsource/sonar-scanner-cli:latest
-  script:
-    - sonar-scanner -Dsonar.projectKey=your_project_key -Dsonar.sources=.
-
 
 
